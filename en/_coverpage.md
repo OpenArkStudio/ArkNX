@@ -1,4 +1,4 @@
-![logo](../_images/logo.png '::size=353x136')
+![logo](../_images/logo.png '::size=300x115')
 
 # <small>alpha</small>
 
