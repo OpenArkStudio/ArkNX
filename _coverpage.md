@@ -1,4 +1,6 @@
-# ArkNX<small>0.0.1 alpha</small>
+![logo](_images/logo.png ':size=353x136')
+
+# <small>alpha</small>
 
 > 基于Ark的多用途、多场景、多线程下的插件框架.
 

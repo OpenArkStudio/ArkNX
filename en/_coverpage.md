@@ -1,4 +1,6 @@
-# ArkNX<small>0.0.1 alpha</small>
+![logo](../_images/logo.png '::size=353x136')
+
+# <small>alpha</small>
 
 > Next generation plugin frame in multi-purpose, multi-scene, multi-threading based on ARK.
 
