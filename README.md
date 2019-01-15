@@ -1,2 +1,12 @@
 # ArkNX
-Ark next generation version to adapt other fields and more scenes.
+
+> 基于Ark的多用途、多场景、多线程下的插件框架. 一些思路来自于其他行业的朋友, 在此感谢他们对本项目的付出.
+
+## 特性
+
+- 弹性的应用、插件、模块组成方式
+- 抽象的数据管理系统
+- 基于面向数据和面向接口编程(IOP & DOP)
+- 事件和数据驱动
+- 基于标准C++
+- 高并发、高性能
