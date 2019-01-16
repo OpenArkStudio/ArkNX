@@ -1,4 +1,4 @@
-![logo](https://github.com/QuadHex/ArkNX/raw/gh-pages/_images/logo.png)
+![logo](https://github.com/QuadHex/ArkNX/raw/gh-pages/_images/ark_logo.svg)
 
 Ark next generation version to adapt other fields and more scenes.
 
