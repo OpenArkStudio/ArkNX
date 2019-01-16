@@ -1,4 +1,4 @@
-![logo](_images/logo.png ':size=300x115')
+![logo](_images/arknx_logo.svg ':size=300x115')
 
 # <small>alpha</small>
 
