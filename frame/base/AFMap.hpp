@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "Common/AFMacros.hpp"
+#include "AFMacros.hpp"
 
 namespace ark
 {

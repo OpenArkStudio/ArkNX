@@ -18,7 +18,7 @@
 *
 */
 
-#include "SDK/Core/AFPlatform.hpp"
+#include "AFPlatform.hpp"
 
 #if ARK_PLATFORM == PLATFORM_WIN
 

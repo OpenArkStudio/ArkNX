@@ -23,9 +23,9 @@
 #include "rapidxml/rapidxml_iterators.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 #include "rapidxml/rapidxml_utils.hpp"
-#include "Common/AFPlatform.hpp"
-#include "Common/AFDateTime.hpp"
-#include "Interface/AFIPlugin.h"
+#include "base/AFPlatform.hpp"
+#include "base/AFDateTime.hpp"
+#include "interface/AFIPlugin.h"
 #include "AFCPluginManager.h"
 
 namespace ark
@@ -67,6 +67,11 @@ namespace ark
 
     bool AFCPluginManager::LoadPluginConf()
     {
+        if (mstrPluginConfPath.empty())
+        {
+            return true;
+        }
+
         rapidxml::file<> fdoc(mstrPluginConfPath.c_str());
         rapidxml::xml_document<>  doc;
         doc.parse<0>(fdoc.data());
@@ -393,4 +398,25 @@ namespace ark
         return true;
     }
 
+    bool AFCPluginManager::StartReLoadState()
+    {
+        AFIModule::StartReLoadState();
+
+        for (AFIPlugin* pPlugin = mxPluginInstanceMap.First(); pPlugin != nullptr; pPlugin = mxPluginInstanceMap.Next())
+        {
+            pPlugin->StartReLoadState();
+        }
+
+        return true;
+    }
+
+    bool AFCPluginManager::EndReLoadState()
+    {
+        for (AFIPlugin* pPlugin = mxPluginInstanceMap.First(); pPlugin != nullptr; pPlugin = mxPluginInstanceMap.Next())
+        {
+            pPlugin->EndReLoadState();
+        }
+
+        return AFIModule::EndReLoadState();
+    }
 }

@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include "SDK/Core/AFPlatform.hpp"
-
 namespace ark
 {
     //will modify to enum class with C++ mordern standard

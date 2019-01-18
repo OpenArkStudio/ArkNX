@@ -19,9 +19,9 @@
 */
 
 #include <args/args.hxx>
-#include "Common/AFMacros.hpp"
-#include "Common/AFDateTime.hpp"
-#include "Common/AFMisc.hpp"
+#include "base/AFMacros.hpp"
+#include "base/AFDateTime.hpp"
+#include "base/AFMisc.hpp"
 #include "AFCPluginManager.h"
 
 using namespace ark;
@@ -107,7 +107,6 @@ void PrintLogo()
  | | | | | | |/ _` |/ _` | |_| |/ _ \ \/ /  _____    / _ \ | '__| |/ /  \| |\  / 
  | |_| | |_| | (_| | (_| |  _  |  __/>  <  |_____|  / ___ \| |  |   <| |\  |/  \
   \__\_\\__,_|\__,_|\__,_|_| |_|\___/_/\_\         /_/   \_\_|  |_|\_\_| \_/_/\_\
-                                                                                
 
 Copyright 2018 (c) QuadHex. All Rights Reserved.
 Website: https://quadhex.io
@@ -146,7 +145,7 @@ void CreateBackThread()
 
 bool ParseArgs(int argc, char* argv[])
 {
-    args::ArgumentParser parser("Here is ark plugin loader argument tools", "If you have any questions, please report an issue in GitHub.");
+    args::ArgumentParser parser("This is ArkNX plugin loader argument tools", "If you have any questions, please report an issue in GitHub.");
     args::HelpFlag help(parser, "help", "Display the help menu", {'h', "help"});
     args::ActionFlag xbutton(parser, "close", "Close [x] button in Windows", { 'x' }, []()
     {
@@ -187,7 +186,7 @@ bool ParseArgs(int argc, char* argv[])
         CONSOLE_ERROR_LOG << parser;
         return false;
     }
-    
+
     //Set app name
     if (name)
 {
@@ -197,6 +196,8 @@ bool ParseArgs(int argc, char* argv[])
         //Set process name
 #if ARK_PLATFORM == PLATFORM_WIN
         SetConsoleTitle(process_name.c_str());
+#elif ARK_PLATFORM == PLATFORM_UNIX
+        //setproctitle(process_name.c_str(), argc, argv);
 #endif
     }
     else
@@ -238,10 +239,10 @@ int main(int argc, char* argv[])
 
     PrintLogo();
 
-    AFCPluginManager::get()->Init();
-    AFCPluginManager::get()->PostInit();
-    AFCPluginManager::get()->CheckConfig();
-    AFCPluginManager::get()->PreUpdate();
+    ARK_ASSERT_RET_VAL(AFCPluginManager::get()->Init(), -1);
+    ARK_ASSERT_RET_VAL(AFCPluginManager::get()->PostInit(), -1);
+    ARK_ASSERT_RET_VAL(AFCPluginManager::get()->CheckConfig(), -1);
+    ARK_ASSERT_RET_VAL(AFCPluginManager::get()->PreUpdate(), -1);
 
     while (!g_exit_loop)
     {

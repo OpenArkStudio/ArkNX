@@ -20,10 +20,10 @@
 
 #pragma once
 
-#include "Common/AFPlatform.hpp"
-#include "Common/AFMap.hpp"
-#include "Interface/AFIModule.h"
-#include "Interface/AFIPluginManager.h"
+#include "base/AFPlatform.hpp"
+#include "base/AFMap.hpp"
+#include "AFIModule.h"
+#include "AFIPluginManager.h"
 
 namespace ark
 {
