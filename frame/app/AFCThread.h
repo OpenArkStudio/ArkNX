@@ -25,6 +25,8 @@
 
 #if ARK_PLATFORM == PLATFORM_WIN
 #include <windows.h>
+#include <process.h>
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #else
@@ -35,9 +37,19 @@
 #include <errno.h>
 #endif
 
+using namespace std;
+
 namespace ark
 {
-    typedef void(*ThreadCallbackRun)(void);
+#if ARK_PLATFORM == PLATFORM_WIN
+    typedef unsigned (*ThreadCallbackRun)(LPVOID);
+    typedef HANDLE ThreadID;
+#define HANDEL_ERROR_VALUE INVALID_HANDLE_VALUE
+#else
+    typedef void* (*ThreadCallbackRun)(void*);
+    typedef pthread_t ThreadID;
+#define HANDEL_ERROR_VALUE -1
+#endif
 
     class AFCThread
     {
@@ -45,14 +57,16 @@ namespace ark
         AFCThread();
         ~AFCThread();
 
-        bool CreateThread(ThreadCallbackRun, void* arg);
+        bool CreateThread(ThreadCallbackRun thread_callback_run, void* arg);
+
+        int KillThread();
+
+        bool IsAlive();
+
+        ThreadID GetThreadID();
 
     private:
-#if ARK_PLATFORM == PLATFORM_WIN
-        DWORD thread_id_;
-#else
-        pthread_t thread_id_;
-#endif
+        ThreadID thread_id_;
     };
 }
 
