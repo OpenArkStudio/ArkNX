@@ -14,7 +14,7 @@
     <ProjectGuid>{B65A0FB2-E49B-4FE9-93F7-EAE6B8E51944}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>AFPluginLoader</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ProjectName>app</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -102,10 +102,14 @@
   <ItemGroup>
     <ClInclude Include="AFCDynLib.h" />
     <ClInclude Include="AFCPluginManager.h" />
+    <ClInclude Include="AFCThread.h" />
+    <ClInclude Include="AFCThreadManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AFCDynLib.cpp" />
     <ClCompile Include="AFCPluginManager.cpp" />
+    <ClCompile Include="AFCThread.cpp" />
+    <ClCompile Include="AFCThreadManager.cpp" />
     <ClCompile Include="AFMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
