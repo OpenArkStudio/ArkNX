@@ -42,6 +42,7 @@ bool ark::AFCThread::CreateThread(ThreadCallbackLogic thread_callback_logic, voi
 
     if (thread_id_ != HANDEL_ERROR_VALUE)
     {
+        create_thread_time_ = AFDateTime::GetNowTime();
         return true;
     }
     else
