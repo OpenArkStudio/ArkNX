@@ -38,8 +38,6 @@
 #include <errno.h>
 #endif
 
-using namespace std;
-
 namespace ark
 {
     //Thread return
@@ -50,8 +48,14 @@ namespace ark
         ARK_THREAD_RETURN_ERROR,
     };
 
-    //thread logic function
-    typedef ThreadReturn(*ThreadCallbackLogic)(void*);
+    //Thread state
+    enum ThreadState
+    {
+        ARK_THREAD_STATE_NONE = 0,
+        ARK_THREAD_STATE_INIT,
+        ARK_THREAD_STATE_LOGIC_RUN,
+        ARK_THREAD_STATE_LOGIC_ERROR
+    };
 
 #if ARK_PLATFORM == PLATFORM_WIN
     typedef HANDLE ThreadID;
@@ -65,11 +69,19 @@ namespace ark
 #define HANDEL_ERROR_VALUE -1
 #endif
 
+    //thread logic function
+    // int  is errorno
+    typedef ThreadReturn(*ThreadCallbackLogic)(int&, void*);
+
+    typedef int (*ThreadErrorLogic)(int, int, void*);
+
     class AFIThread
     {
     public:
         AFIThread() {};
         virtual ~AFIThread() {}
+
+        virtual int GetThreadLogicID() = 0;
 
         virtual void Lock() = 0;
 
@@ -78,6 +90,8 @@ namespace ark
         virtual void SaveLastRunTimeBegin() = 0;
 
         virtual void SaveLastRunTimeEnd() = 0;
+
+        virtual void SetThreadState(ThreadState thread_state) = 0;
     };
 
     //thread param
@@ -90,6 +104,7 @@ namespace ark
         AFIThread* thread_;
         void*      arg_;
         ThreadCallbackLogic thread_callback_logic_;
+        ThreadErrorLogic    thread_error_logic_;
     };
 
     //run thread logic
@@ -105,8 +120,9 @@ namespace ark
 
         while (true)
         {
+            int nError = 0;
             thread_param->thread_->SaveLastRunTimeBegin();
-            ThreadReturn thread_return = thread_param->thread_callback_logic_(thread_param->arg_);
+            ThreadReturn thread_return = thread_param->thread_callback_logic_(nError, thread_param->arg_);
             thread_param->thread_->SaveLastRunTimeEnd();
 
             if (ARK_THREAD_RETURN_ONCE == thread_return)
@@ -116,7 +132,11 @@ namespace ark
             }
             else if (ARK_THREAD_RETURN_ERROR == thread_return)
             {
-                //write log
+                //call thread logic error function
+                thread_param->thread_error_logic_(thread_param->thread_->GetThreadLogicID(),
+                                                  nError,
+                                                  thread_param->arg_);
+                break;
             }
         }
 
@@ -131,7 +151,7 @@ namespace ark
         AFCThread();
         virtual ~AFCThread();
 
-        bool CreateThread(ThreadCallbackLogic thread_callback_logic, void* arg);
+        bool CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg);
 
         int KillThread();
 
@@ -141,6 +161,8 @@ namespace ark
 
         bool Resume();
 
+        virtual int GetThreadLogicID();
+
         virtual void Lock();
 
         virtual void UnLock();
@@ -149,16 +171,28 @@ namespace ark
 
         virtual void SaveLastRunTimeEnd();
 
+        virtual void SetThreadState(ThreadState thread_state);
+
+        AFDateTime GetCreatehreadTime();
+
+        AFDateTime GetLogicBeginThreadTime();
+
+        AFDateTime GetLogicEndThreadTime();
+
+        ThreadState GetThreadState();
+
         ThreadID GetThreadID();
 
     private:
+        int      thread_logic_id_;
         ThreadID thread_id_;
         ThreadMutex* thread_mutex_;
         ThreadCond* thread_cond_;
         AFCThreadParam thread_param_;
-        int64_t create_thread_time_;
-        int64_t logic_begin_thread_time_;
-        int64_t logic_end_thread_time_;
+        AFDateTime create_thread_time_;
+        AFDateTime logic_begin_thread_time_;
+        AFDateTime logic_end_thread_time_;
+        ThreadState thread_state_;
     };
 }
 

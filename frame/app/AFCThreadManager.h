@@ -21,13 +21,33 @@
 #ifndef _AFCTHREADMANAGER_H
 #define _AFCTHREADMANAGER_H
 
+#include "AFCThread.h"
+#include <map>
 
+using namespace std;
 
 namespace ark
 {
+    typedef map<int, AFCThread*> mapThreadList;
+
     class AFCThreadManager
     {
+    public:
+        AFCThreadManager();
+        ~AFCThreadManager();
 
+        bool CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg);
+
+        bool KillThread(int thread_logic_id);
+
+        bool IsAlive(int thread_logic_id);
+
+        bool Pause(int thread_logic_id);
+
+        bool Resume(int thread_logic_id);
+
+    private:
+        mapThreadList thread_list_;
     };
 }
 
