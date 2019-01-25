@@ -51,7 +51,7 @@ namespace ark
     };
 
     //thread logic function
-    typedef ThreadReturn (*ThreadCallbackLogic)(void*);
+    typedef ThreadReturn(*ThreadCallbackLogic)(void*);
 
 #if ARK_PLATFORM == PLATFORM_WIN
     typedef HANDLE ThreadID;
@@ -69,7 +69,7 @@ namespace ark
     {
     public:
         AFIThread() {};
-        virtual ~AFIThread() = 0;
+        virtual ~AFIThread() {}
 
         virtual void Lock() = 0;
 
@@ -99,7 +99,7 @@ namespace ark
     void* ThreadCallbackRun(void* arg)
 #endif
     {
-        AFCThreadParam* thread_param = (AFCThreadParam* )arg;
+        AFCThreadParam* thread_param = (AFCThreadParam*)arg;
 
         thread_param->thread_->Lock();
 
@@ -156,9 +156,9 @@ namespace ark
         ThreadMutex* thread_mutex_;
         ThreadCond* thread_cond_;
         AFCThreadParam thread_param_;
-        AFDateTime create_thread_time_;
-        AFDateTime logic_begin_thread_time_;
-        AFDateTime logic_end_thread_time_;
+        int64_t create_thread_time_;
+        int64_t logic_begin_thread_time_;
+        int64_t logic_end_thread_time_;
     };
 }
 
