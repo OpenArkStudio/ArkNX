@@ -53,8 +53,15 @@ namespace ark
     {
         ARK_THREAD_STATE_NONE = 0,
         ARK_THREAD_STATE_INIT,
-        ARK_THREAD_STATE_LOGIC_RUN,
+        ARK_THREAD_STATE_LOGIC_RUN_BEGIN,
+        ARK_THREAD_STATE_LOGIC_RUN_END,
         ARK_THREAD_STATE_LOGIC_ERROR
+    };
+
+    enum ThreadError
+    {
+        ARK_THREAD_ERROR_CLOSE = 0,
+        ARK_THREAD_ERROR_CONTINUE
     };
 
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -73,7 +80,7 @@ namespace ark
     // int  is errorno
     typedef ThreadReturn(*ThreadCallbackLogic)(int&, void*);
 
-    typedef int (*ThreadErrorLogic)(int, int, void*);
+    typedef ThreadError(*ThreadErrorLogic)(int, int, void*);
 
     class AFIThread
     {
@@ -121,6 +128,7 @@ namespace ark
         while (true)
         {
             int nError = 0;
+            thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_BEGIN);
             thread_param->thread_->SaveLastRunTimeBegin();
             ThreadReturn thread_return = thread_param->thread_callback_logic_(nError, thread_param->arg_);
             thread_param->thread_->SaveLastRunTimeEnd();
@@ -133,10 +141,19 @@ namespace ark
             else if (ARK_THREAD_RETURN_ERROR == thread_return)
             {
                 //call thread logic error function
-                thread_param->thread_error_logic_(thread_param->thread_->GetThreadLogicID(),
-                                                  nError,
-                                                  thread_param->arg_);
-                break;
+                thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_ERROR);
+                ThreadError thread_error = thread_param->thread_error_logic_(thread_param->thread_->GetThreadLogicID(),
+                                           nError,
+                                           thread_param->arg_);
+
+                if (ARK_THREAD_ERROR_CLOSE == thread_error)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
             }
         }
 
