@@ -29,7 +29,7 @@ ark::AFCThread::~AFCThread()
 
 bool ark::AFCThread::CreateThread(ThreadCallbackLogic thread_callback_logic, void* arg)
 {
-    thread_param_.thread_                = (AFIThread* )this;
+    thread_param_.thread_                = (AFIThread*)this;
     thread_param_.arg_                   = arg;
     thread_param_.thread_callback_logic_ = thread_callback_logic;
 
