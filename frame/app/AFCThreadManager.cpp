@@ -1,6 +1,6 @@
 #include "AFCThreadManager.h"
 
-ark::AFCThreadManager::AFCThreadManager()
+ark::AFCThreadManager::AFCThreadManager() : thread_timeout_(0), main_check_time_interval_(0)
 {
 #if ARK_PLATFORM == PLATFORM_WIN
     main_thread_mutex_ = new CRITICAL_SECTION();
@@ -18,9 +18,18 @@ ark::AFCThreadManager::~AFCThreadManager()
     }
 }
 
-void ark::AFCThreadManager::Init(int main_check_time_interval)
+void ark::AFCThreadManager::Init(int main_check_time_interval, int64_t thread_timeout)
 {
+    main_check_time_interval_ = main_check_time_interval;
+    thread_timeout_           = thread_timeout;
 
+    //create main thread
+#if ARK_PLATFORM == PLATFORM_WIN
+    unsigned int thread_id = 0;
+    _beginthreadex(NULL, 0, MainThreadCallbackRun, (PVOID)(AFIThreadManager* )this, 0, &thread_id);
+#else
+    pthread_create(&thread_id_, NULL, ThreadCallbackRun, (void*)(AFIThreadManager*)this);
+#endif
 }
 
 bool ark::AFCThreadManager::CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg)
@@ -153,11 +162,22 @@ void ark::AFCThreadManager::CheckThreadList()
 
         if (ARK_THREAD_STATE_LOGIC_RUN_BEGIN == thread_info->GetThreadState())
         {
-            AFDateTime date_interval = date_now - thread_info->GetLogicBeginThreadTime();
+            int64_t date_interval = date_now - thread_info->GetLogicBeginThreadTime();
+
+            if (date_interval >= thread_timeout_)
+            {
+                //thread timeout
+                thread_info->ThreadTimeoutCallBack();
+            }
         }
     }
 
     UnLock();
+}
+
+int ark::AFCThreadManager::GetMainThreadChekInterval()
+{
+    return main_check_time_interval_;
 }
 
 void ark::AFCThreadManager::Lock()

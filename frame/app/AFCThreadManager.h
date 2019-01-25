@@ -21,6 +21,7 @@
 #ifndef _AFCTHREADMANAGER_H
 #define _AFCTHREADMANAGER_H
 
+#include "base/AFMacros.hpp"
 #include "AFCThread.h"
 #include <map>
 
@@ -38,6 +39,8 @@ namespace ark
         virtual ~AFIThreadManager() {};
 
         virtual void CheckThreadList() = 0;
+
+        virtual int GetMainThreadChekInterval() = 0;
     };
 
     //run mian thread logic
@@ -47,17 +50,23 @@ namespace ark
     void* MainThreadCallbackRun(void* arg)
 #endif
     {
+        AFIThreadManager* thread_manager = (AFIThreadManager*)arg;
 
+        while (true)
+        {
+            thread_manager->CheckThreadList();
+            ARK_SLEEP(thread_manager->GetMainThreadChekInterval());
+        }
     };
 
 
-    class AFCThreadManager
+    class AFCThreadManager : public AFIThreadManager
     {
     public:
         AFCThreadManager();
-        ~AFCThreadManager();
+        virtual ~AFCThreadManager();
 
-        void Init(int main_check_time_interval);
+        void Init(int main_check_time_interval, int64_t thread_timeout);
 
         bool CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg);
 
@@ -71,6 +80,8 @@ namespace ark
 
         virtual void CheckThreadList();
 
+        virtual int GetMainThreadChekInterval();
+
     private:
         void Lock();
 
@@ -78,7 +89,9 @@ namespace ark
 
     private:
         mapThreadList thread_list_;
-        ThreadMutex* main_thread_mutex_;
+        ThreadMutex*  main_thread_mutex_;
+        int64_t       thread_timeout_;
+        int           main_check_time_interval_;
     };
 }
 
