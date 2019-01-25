@@ -1,7 +1,12 @@
 #include "AFCThread.h"
 
 
-ark::AFCThread::AFCThread() : thread_id_(HANDEL_ERROR_VALUE), thread_mutex_(NULL), thread_cond_(NULL)
+ark::AFCThread::AFCThread() :
+    thread_logic_id_(0),
+    thread_id_(HANDEL_ERROR_VALUE),
+    thread_mutex_(NULL),
+    thread_cond_(NULL),
+    thread_state_(ARK_THREAD_STATE_NONE)
 {
 #if ARK_PLATFORM == PLATFORM_WIN
     thread_mutex_ = new CRITICAL_SECTION();
@@ -27,11 +32,20 @@ ark::AFCThread::~AFCThread()
     }
 }
 
-bool ark::AFCThread::CreateThread(ThreadCallbackLogic thread_callback_logic, void* arg)
+bool ark::AFCThread::CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg)
 {
+    if (ARK_THREAD_STATE_NONE != thread_state_)
+    {
+        return false;
+    }
+
     thread_param_.thread_                = (AFIThread*)this;
     thread_param_.arg_                   = arg;
     thread_param_.thread_callback_logic_ = thread_callback_logic;
+    thread_param_.thread_error_logic_    = thread_callback_error;
+
+    thread_state_                        = ARK_THREAD_STATE_INIT;
+    thread_logic_id_                     = thread_logic_id;
 
 #if ARK_PLATFORM == PLATFORM_WIN
     unsigned int thread_id = 0;
@@ -42,7 +56,7 @@ bool ark::AFCThread::CreateThread(ThreadCallbackLogic thread_callback_logic, voi
 
     if (thread_id_ != HANDEL_ERROR_VALUE)
     {
-        create_thread_time_ = AFDateTime::GetNowTime();
+        create_thread_time_.update();
         return true;
     }
     else
@@ -138,14 +152,46 @@ void ark::AFCThread::UnLock()
 void ark::AFCThread::SaveLastRunTimeBegin()
 {
     //save thread last run time begin
+    logic_begin_thread_time_.update();
 }
 
 void ark::AFCThread::SaveLastRunTimeEnd()
 {
     //save thread last run time End
+    logic_end_thread_time_.update();
+}
+
+ark::AFDateTime ark::AFCThread::GetCreatehreadTime()
+{
+    return create_thread_time_;
+}
+
+ark::AFDateTime ark::AFCThread::GetLogicBeginThreadTime()
+{
+    return logic_begin_thread_time_;
+}
+
+ark::AFDateTime ark::AFCThread::GetLogicEndThreadTime()
+{
+    return logic_end_thread_time_;
 }
 
 ark::ThreadID ark::AFCThread::GetThreadID()
 {
     return thread_id_;
+}
+
+ark::ThreadState ark::AFCThread::GetThreadState()
+{
+    return thread_state_;
+}
+
+int ark::AFCThread::GetThreadLogicID()
+{
+    return thread_logic_id_;
+}
+
+void ark::AFCThread::SetThreadState(ThreadState thread_state)
+{
+    thread_state_ = thread_state;
 }
