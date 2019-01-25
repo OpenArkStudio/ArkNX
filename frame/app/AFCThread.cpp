@@ -46,6 +46,7 @@ bool ark::AFCThread::CreateThread(int thread_logic_id, ThreadCallbackLogic threa
 
     thread_state_                        = ARK_THREAD_STATE_INIT;
     thread_logic_id_                     = thread_logic_id;
+    thread_error_logic_                  = thread_callback_error;
 
 #if ARK_PLATFORM == PLATFORM_WIN
     unsigned int thread_id = 0;
@@ -179,6 +180,14 @@ ark::AFDateTime ark::AFCThread::GetLogicEndThreadTime()
 ark::ThreadID ark::AFCThread::GetThreadID()
 {
     return thread_id_;
+}
+
+void ark::AFCThread::ThreadTimeoutCallBack()
+{
+    thread_error_logic_(thread_logic_id_,
+                        ARK_THREAD_LOGIC_TIMEOUT,
+                        0,
+                        NULL);
 }
 
 ark::ThreadState ark::AFCThread::GetThreadState()

@@ -64,6 +64,12 @@ namespace ark
         ARK_THREAD_ERROR_CONTINUE
     };
 
+    enum ThreadLogicErrorType
+    {
+        ARK_THREAD_LOGIC_ERROR = 0,
+        ARK_THREAD_LOGIC_TIMEOUT
+    };
+
 #if ARK_PLATFORM == PLATFORM_WIN
     typedef HANDLE ThreadID;
     typedef CRITICAL_SECTION ThreadMutex;
@@ -80,7 +86,7 @@ namespace ark
     // int  is errorno
     typedef ThreadReturn(*ThreadCallbackLogic)(int&, void*);
 
-    typedef ThreadError(*ThreadErrorLogic)(int, int, void*);
+    typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int, void*);
 
     class AFIThread
     {
@@ -143,6 +149,7 @@ namespace ark
                 //call thread logic error function
                 thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_ERROR);
                 ThreadError thread_error = thread_param->thread_error_logic_(thread_param->thread_->GetThreadLogicID(),
+                                           ARK_THREAD_LOGIC_ERROR,
                                            nError,
                                            thread_param->arg_);
 
@@ -200,6 +207,8 @@ namespace ark
 
         ThreadID GetThreadID();
 
+        void ThreadTimeoutCallBack();
+
     private:
         int      thread_logic_id_;
         ThreadID thread_id_;
@@ -210,6 +219,7 @@ namespace ark
         AFDateTime logic_begin_thread_time_;
         AFDateTime logic_end_thread_time_;
         ThreadState thread_state_;
+        ThreadErrorLogic thread_error_logic_;
     };
 }
 
