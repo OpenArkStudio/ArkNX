@@ -22,6 +22,7 @@
 #define _AFCTHREAD_H
 
 #include "base/AFPlatform.hpp"
+#include "base/AFDateTime.hpp"
 
 #if ARK_PLATFORM == PLATFORM_WIN
 #include <windows.h>
@@ -155,6 +156,9 @@ namespace ark
         ThreadMutex* thread_mutex_;
         ThreadCond* thread_cond_;
         AFCThreadParam thread_param_;
+        AFDateTime create_thread_time_;
+        AFDateTime logic_begin_thread_time_;
+        AFDateTime logic_end_thread_time_;
     };
 }
 
