@@ -26,15 +26,38 @@
 
 using namespace std;
 
+
 namespace ark
 {
     typedef map<int, AFCThread*> mapThreadList;
+
+    class AFIThreadManager
+    {
+    public:
+        AFIThreadManager() {};
+        virtual ~AFIThreadManager() {};
+
+        virtual void CheckThreadList() = 0;
+    };
+
+    //run mian thread logic
+#if ARK_PLATFORM == PLATFORM_WIN
+    unsigned MainThreadCallbackRun(void* arg)
+#else
+    void* MainThreadCallbackRun(void* arg)
+#endif
+    {
+
+    };
+
 
     class AFCThreadManager
     {
     public:
         AFCThreadManager();
         ~AFCThreadManager();
+
+        void Init(int main_check_time_interval);
 
         bool CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg);
 
@@ -46,8 +69,16 @@ namespace ark
 
         bool Resume(int thread_logic_id);
 
+        virtual void CheckThreadList();
+
+    private:
+        void Lock();
+
+        void UnLock();
+
     private:
         mapThreadList thread_list_;
+        ThreadMutex* main_thread_mutex_;
     };
 }
 
