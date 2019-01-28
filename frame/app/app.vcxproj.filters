@@ -6,6 +6,7 @@
     <ClInclude Include="AFCThreadManager.h" />
     <ClInclude Include="AFCThread.h" />
     <ClInclude Include="..\base\AFDateTime.hpp" />
+    <ClInclude Include="AFCProcess.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AFCDynLib.cpp" />
@@ -13,5 +14,6 @@
     <ClCompile Include="AFMain.cpp" />
     <ClCompile Include="AFCThreadManager.cpp" />
     <ClCompile Include="AFCThread.cpp" />
+    <ClCompile Include="AFCProcess.cpp" />
   </ItemGroup>
 </Project>

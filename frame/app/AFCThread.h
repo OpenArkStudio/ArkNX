@@ -89,6 +89,8 @@ namespace ark
 
     typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int, void*);
 
+    typedef void(*ThreadExit)(int);
+
     class AFIThread
     {
     public:
@@ -121,6 +123,7 @@ namespace ark
         void*      arg_;
         ThreadCallbackLogic thread_callback_logic_;
         ThreadErrorLogic    thread_error_logic_;
+        ThreadExit          thread_exit_;
     };
 
     //run thread logic
@@ -167,6 +170,7 @@ namespace ark
             }
         }
 
+        thread_param->thread_exit_(thread_param->thread_->GetThreadLogicID());
         thread_param->thread_->UnLock();
 
         return 0;
@@ -178,7 +182,11 @@ namespace ark
         AFCThread();
         virtual ~AFCThread();
 
-        bool CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg);
+        bool CreateThread(int thread_logic_id,
+                          ThreadCallbackLogic thread_callback_logic,
+                          ThreadErrorLogic thread_callback_error,
+                          ThreadExit thread_exit,
+                          void* arg);
 
         int KillThread();
 

@@ -32,7 +32,11 @@ ark::AFCThread::~AFCThread()
     }
 }
 
-bool ark::AFCThread::CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg)
+bool ark::AFCThread::CreateThread(int thread_logic_id,
+                                  ThreadCallbackLogic thread_callback_logic,
+                                  ThreadErrorLogic thread_callback_error,
+                                  ThreadExit thread_exit,
+                                  void* arg)
 {
     if (ARK_THREAD_STATE_NONE != thread_state_)
     {
@@ -43,6 +47,7 @@ bool ark::AFCThread::CreateThread(int thread_logic_id, ThreadCallbackLogic threa
     thread_param_.arg_                   = arg;
     thread_param_.thread_callback_logic_ = thread_callback_logic;
     thread_param_.thread_error_logic_    = thread_callback_error;
+    thread_param_.thread_exit_           = thread_exit;
 
     thread_state_                        = ARK_THREAD_STATE_INIT;
     thread_logic_id_                     = thread_logic_id;
