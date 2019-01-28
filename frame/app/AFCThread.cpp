@@ -81,6 +81,11 @@ int ark::AFCThread::KillThread()
     return 0;
 }
 
+void ark::AFCThread::StopThread()
+{
+    thread_state_ = ARK_THREAD_STATE_LOGIC_CLOSE;
+}
+
 bool ark::AFCThread::IsAlive()
 {
     if (HANDEL_ERROR_VALUE != thread_id_)
