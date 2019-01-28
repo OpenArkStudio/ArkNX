@@ -85,6 +85,8 @@ namespace ark
 
     //thread logic function
     // int  is errorno
+    typedef void(*ThreadInit)(int);
+
     typedef ThreadReturn(*ThreadCallbackLogic)(int&, void*);
 
     typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int, void*);
@@ -124,6 +126,7 @@ namespace ark
         ThreadCallbackLogic thread_callback_logic_;
         ThreadErrorLogic    thread_error_logic_;
         ThreadExit          thread_exit_;
+        ThreadInit          thread_init_;
     };
 
     //run thread logic
@@ -136,6 +139,9 @@ namespace ark
         AFCThreadParam* thread_param = (AFCThreadParam*)arg;
 
         thread_param->thread_->Lock();
+
+        //Init thread func
+        thread_param->thread_init_(thread_param->thread_->GetThreadLogicID());
 
         while (ARK_THREAD_STATE_LOGIC_CLOSE != thread_param->thread_->GetThreadState())
         {
@@ -183,6 +189,7 @@ namespace ark
         virtual ~AFCThread();
 
         bool CreateThread(int thread_logic_id,
+                          ThreadInit thread_init,
                           ThreadCallbackLogic thread_callback_logic,
                           ThreadErrorLogic thread_callback_error,
                           ThreadExit thread_exit,
