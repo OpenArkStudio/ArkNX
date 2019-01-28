@@ -73,6 +73,7 @@ namespace ark
         void Init(int main_check_time_interval, int64_t thread_timeout);
 
         bool CreateThread(int thread_logic_id,
+                          ThreadInit thread_init,
                           ThreadCallbackLogic thread_callback_logic,
                           ThreadErrorLogic thread_callback_error,
                           ThreadExit thread_exit,
