@@ -61,7 +61,11 @@ void ark::AFCThreadManager::Init(int main_check_time_interval, int64_t thread_ti
 #endif
 }
 
-bool ark::AFCThreadManager::CreateThread(int thread_logic_id, ThreadCallbackLogic thread_callback_logic, ThreadErrorLogic thread_callback_error, void* arg)
+bool ark::AFCThreadManager::CreateThread(int thread_logic_id,
+        ThreadCallbackLogic thread_callback_logic,
+        ThreadErrorLogic thread_callback_error,
+        ThreadExit thread_exit,
+        void* arg)
 {
     Lock();
     mapThreadList::iterator f = thread_list_.find(thread_logic_id);
@@ -81,7 +85,11 @@ bool ark::AFCThreadManager::CreateThread(int thread_logic_id, ThreadCallbackLogi
         return false;
     }
 
-    bool blret = thread_info->CreateThread(thread_logic_id, thread_callback_logic, thread_callback_error, arg);
+    bool blret = thread_info->CreateThread(thread_logic_id,
+                                           thread_callback_logic,
+                                           thread_callback_error,
+                                           thread_exit,
+                                           arg);
 
     if (true == blret)
     {
