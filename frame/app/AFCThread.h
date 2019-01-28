@@ -55,7 +55,8 @@ namespace ark
         ARK_THREAD_STATE_INIT,
         ARK_THREAD_STATE_LOGIC_RUN_BEGIN,
         ARK_THREAD_STATE_LOGIC_RUN_END,
-        ARK_THREAD_STATE_LOGIC_ERROR
+        ARK_THREAD_STATE_LOGIC_ERROR,
+        ARK_THREAD_STATE_LOGIC_CLOSE
     };
 
     enum ThreadError
@@ -105,6 +106,8 @@ namespace ark
         virtual void SaveLastRunTimeEnd() = 0;
 
         virtual void SetThreadState(ThreadState thread_state) = 0;
+
+        virtual ThreadState GetThreadState() = 0;
     };
 
     //thread param
@@ -131,7 +134,7 @@ namespace ark
 
         thread_param->thread_->Lock();
 
-        while (true)
+        while (ARK_THREAD_STATE_LOGIC_CLOSE != thread_param->thread_->GetThreadState())
         {
             int nError = 0;
             thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_BEGIN);
@@ -179,6 +182,8 @@ namespace ark
 
         int KillThread();
 
+        void StopThread();
+
         bool IsAlive();
 
         bool Pause();
@@ -197,13 +202,13 @@ namespace ark
 
         virtual void SetThreadState(ThreadState thread_state);
 
+        virtual ThreadState GetThreadState();
+
         AFDateTime GetCreatehreadTime();
 
         AFDateTime GetLogicBeginThreadTime();
 
         AFDateTime GetLogicEndThreadTime();
-
-        ThreadState GetThreadState();
 
         ThreadID GetThreadID();
 

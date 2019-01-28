@@ -11,11 +11,40 @@ ark::AFCThreadManager::AFCThreadManager() : thread_timeout_(0), main_check_time_
 
 ark::AFCThreadManager::~AFCThreadManager()
 {
+    Close();
+
     if (NULL != main_thread_mutex_)
     {
         delete main_thread_mutex_;
         main_thread_mutex_ = NULL;
     }
+}
+
+void ark::AFCThreadManager::Close()
+{
+    Lock();
+    vector<AFCThread*> vec_thread_list;
+
+    for (mapThreadList::iterator b = thread_list_.begin(); b != thread_list_.end(); ++b)
+    {
+        AFCThread* thread_info = (AFCThread*)b->second;
+        thread_info->StopThread();
+        vec_thread_list.push_back(thread_info);
+    }
+
+    if (vec_thread_list.size() > 0)
+    {
+        ARK_SLEEP(CLOSE_THREAD_SLEEP_TIME);
+    }
+
+    for (int i = 0; i < (int)vec_thread_list.size(); i++)
+    {
+        delete vec_thread_list[i];
+    }
+
+    vec_thread_list.clear();
+    thread_list_.clear();
+    UnLock();
 }
 
 void ark::AFCThreadManager::Init(int main_check_time_interval, int64_t thread_timeout)

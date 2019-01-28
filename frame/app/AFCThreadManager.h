@@ -23,10 +23,12 @@
 
 #include "base/AFMacros.hpp"
 #include "AFCThread.h"
+#include <vector>
 #include <map>
 
 using namespace std;
 
+#define CLOSE_THREAD_SLEEP_TIME 100
 
 namespace ark
 {
@@ -65,6 +67,8 @@ namespace ark
     public:
         AFCThreadManager();
         virtual ~AFCThreadManager();
+
+        void Close();
 
         void Init(int main_check_time_interval, int64_t thread_timeout);
 
