@@ -6,7 +6,8 @@ ark::AFCThread::AFCThread() :
     thread_id_(HANDEL_ERROR_VALUE),
     thread_mutex_(NULL),
     thread_cond_(NULL),
-    thread_state_(ARK_THREAD_STATE_NONE)
+    thread_state_(ARK_THREAD_STATE_NONE),
+    plugin_manager_(NULL)
 {
 #if ARK_PLATFORM == PLATFORM_WIN
     thread_mutex_ = new CRITICAL_SECTION();
@@ -37,7 +38,8 @@ bool ark::AFCThread::CreateThread(int thread_logic_id,
                                   ThreadCallbackLogic thread_callback_logic,
                                   ThreadErrorLogic thread_callback_error,
                                   ThreadExit thread_exit,
-                                  void* arg)
+                                  void* arg,
+                                  AFIPluginManager* plugin_manager)
 {
     if (ARK_THREAD_STATE_NONE != thread_state_)
     {
@@ -54,6 +56,7 @@ bool ark::AFCThread::CreateThread(int thread_logic_id,
     thread_state_                        = ARK_THREAD_STATE_INIT;
     thread_logic_id_                     = thread_logic_id;
     thread_error_logic_                  = thread_callback_error;
+    plugin_manager_                      = plugin_manager;
 
 #if ARK_PLATFORM == PLATFORM_WIN
     unsigned int thread_id = 0;
@@ -205,6 +208,11 @@ void ark::AFCThread::ThreadTimeoutCallBack()
 ark::ThreadState ark::AFCThread::GetThreadState()
 {
     return thread_state_;
+}
+
+ark::AFIPluginManager* ark::AFCThread::GetPluginManager()
+{
+    return plugin_manager_;
 }
 
 int ark::AFCThread::GetThreadLogicID()

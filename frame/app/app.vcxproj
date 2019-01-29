@@ -103,14 +103,12 @@
     <ClInclude Include="..\base\AFDateTime.hpp" />
     <ClInclude Include="AFCDynLib.h" />
     <ClInclude Include="AFCPluginManager.h" />
-    <ClInclude Include="AFCProcess.h" />
     <ClInclude Include="AFCThread.h" />
     <ClInclude Include="AFCThreadManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AFCDynLib.cpp" />
     <ClCompile Include="AFCPluginManager.cpp" />
-    <ClCompile Include="AFCProcess.cpp" />
     <ClCompile Include="AFCThread.cpp" />
     <ClCompile Include="AFCThreadManager.cpp" />
     <ClCompile Include="AFMain.cpp" />

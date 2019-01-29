@@ -1,6 +1,8 @@
 #include "AFCThreadManager.h"
 
-ark::AFCThreadManager::AFCThreadManager() : thread_timeout_(0), main_check_time_interval_(0)
+ark::AFCThreadManager::AFCThreadManager() :
+    main_check_time_interval_(0),
+    plugin_manager_(NULL)
 {
 #if ARK_PLATFORM == PLATFORM_WIN
     main_thread_mutex_ = new CRITICAL_SECTION();
@@ -47,10 +49,10 @@ void ark::AFCThreadManager::Close()
     UnLock();
 }
 
-void ark::AFCThreadManager::Init(int main_check_time_interval, int64_t thread_timeout)
+void ark::AFCThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager)
 {
     main_check_time_interval_ = main_check_time_interval;
-    thread_timeout_           = thread_timeout;
+    plugin_manager_           = plugin_manager;
 
     //create main thread
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -91,7 +93,8 @@ bool ark::AFCThreadManager::CreateThread(int thread_logic_id,
                                            thread_callback_logic,
                                            thread_callback_error,
                                            thread_exit,
-                                           arg);
+                                           arg,
+                                           plugin_manager_);
 
     if (true == blret)
     {
@@ -203,7 +206,7 @@ void ark::AFCThreadManager::CheckThreadList()
         {
             int64_t date_interval = date_now - thread_info->GetLogicBeginThreadTime();
 
-            if (date_interval >= thread_timeout_)
+            if (date_interval >= GetMainThreadChekInterval())
             {
                 //thread timeout
                 thread_info->ThreadTimeoutCallBack();
@@ -214,7 +217,7 @@ void ark::AFCThreadManager::CheckThreadList()
     UnLock();
 }
 
-int ark::AFCThreadManager::GetMainThreadChekInterval()
+int64_t ark::AFCThreadManager::GetMainThreadChekInterval()
 {
     return main_check_time_interval_;
 }
