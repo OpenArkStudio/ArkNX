@@ -23,6 +23,7 @@
 
 #include "base/AFPlatform.hpp"
 #include "base/AFDateTime.hpp"
+#include "interface/AFIPluginManager.h"
 
 #if ARK_PLATFORM == PLATFORM_WIN
 #include <windows.h>
@@ -83,15 +84,13 @@ namespace ark
 #define HANDEL_ERROR_VALUE -1
 #endif
 
-    //thread logic function
-    // int  is errorno
-    typedef void(*ThreadInit)(int);
+    typedef void(*ThreadInit)(int, AFIPluginManager* plugin_manager);
 
     typedef ThreadReturn(*ThreadCallbackLogic)(int&, void*);
 
     typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int, void*);
 
-    typedef void(*ThreadExit)(int);
+    typedef void(*ThreadExit)(int, AFIPluginManager* plugin_manager);
 
     class AFIThread
     {
@@ -112,6 +111,8 @@ namespace ark
         virtual void SetThreadState(ThreadState thread_state) = 0;
 
         virtual ThreadState GetThreadState() = 0;
+
+        virtual AFIPluginManager* GetPluginManager() = 0;
     };
 
     //thread param
@@ -138,13 +139,14 @@ namespace ark
     {
         AFCThreadParam* thread_param = (AFCThreadParam*)arg;
 
-        thread_param->thread_->Lock();
-
         //Init thread func
-        thread_param->thread_init_(thread_param->thread_->GetThreadLogicID());
+        thread_param->thread_init_(thread_param->thread_->GetThreadLogicID(),
+                                   thread_param->thread_->GetPluginManager());
 
         while (ARK_THREAD_STATE_LOGIC_CLOSE != thread_param->thread_->GetThreadState())
         {
+            thread_param->thread_->Lock();
+
             int nError = 0;
             thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_BEGIN);
             thread_param->thread_->SaveLastRunTimeBegin();
@@ -173,11 +175,13 @@ namespace ark
             else
             {
                 thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
+                thread_param->thread_->UnLock();
             }
         }
 
-        thread_param->thread_exit_(thread_param->thread_->GetThreadLogicID());
         thread_param->thread_->UnLock();
+        thread_param->thread_exit_(thread_param->thread_->GetThreadLogicID(),
+                                   thread_param->thread_->GetPluginManager());
 
         return 0;
     };
@@ -193,7 +197,8 @@ namespace ark
                           ThreadCallbackLogic thread_callback_logic,
                           ThreadErrorLogic thread_callback_error,
                           ThreadExit thread_exit,
-                          void* arg);
+                          void* arg,
+                          AFIPluginManager* plugin_manager);
 
         int KillThread();
 
@@ -219,6 +224,8 @@ namespace ark
 
         virtual ThreadState GetThreadState();
 
+        virtual AFIPluginManager* GetPluginManager();
+
         AFDateTime GetCreatehreadTime();
 
         AFDateTime GetLogicBeginThreadTime();
@@ -240,6 +247,7 @@ namespace ark
         AFDateTime logic_end_thread_time_;
         ThreadState thread_state_;
         ThreadErrorLogic thread_error_logic_;
+        AFIPluginManager* plugin_manager_;
     };
 }
 

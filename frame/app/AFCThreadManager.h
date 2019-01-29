@@ -42,7 +42,7 @@ namespace ark
 
         virtual void CheckThreadList() = 0;
 
-        virtual int GetMainThreadChekInterval() = 0;
+        virtual int64_t GetMainThreadChekInterval() = 0;
     };
 
     //run mian thread logic
@@ -57,7 +57,7 @@ namespace ark
         while (true)
         {
             thread_manager->CheckThreadList();
-            ARK_SLEEP(thread_manager->GetMainThreadChekInterval());
+            ARK_SLEEP((int)thread_manager->GetMainThreadChekInterval());
         }
     };
 
@@ -70,7 +70,7 @@ namespace ark
 
         void Close();
 
-        void Init(int main_check_time_interval, int64_t thread_timeout);
+        void Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager);
 
         bool CreateThread(int thread_logic_id,
                           ThreadInit thread_init,
@@ -89,7 +89,7 @@ namespace ark
 
         virtual void CheckThreadList();
 
-        virtual int GetMainThreadChekInterval();
+        virtual int64_t GetMainThreadChekInterval();
 
     private:
         void Lock();
@@ -97,10 +97,10 @@ namespace ark
         void UnLock();
 
     private:
-        mapThreadList thread_list_;
-        ThreadMutex*  main_thread_mutex_;
-        int64_t       thread_timeout_;
-        int           main_check_time_interval_;
+        mapThreadList     thread_list_;
+        ThreadMutex*      main_thread_mutex_;
+        int64_t           main_check_time_interval_;
+        AFIPluginManager* plugin_manager_;
     };
 }
 
