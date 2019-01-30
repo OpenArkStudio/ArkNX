@@ -24,6 +24,7 @@
 #include "base/AFPlatform.hpp"
 #include "base/AFDateTime.hpp"
 #include "interface/AFIPluginManager.h"
+#include "interface/AFIThread.h"
 
 #if ARK_PLATFORM == PLATFORM_WIN
 #include <windows.h>
@@ -41,36 +42,6 @@
 
 namespace ark
 {
-    //Thread return
-    enum ThreadReturn
-    {
-        ARK_THREAD_RETURN_ONCE = 0,
-        ARK_THREAD_RETURN_CONTINUE,
-        ARK_THREAD_RETURN_ERROR,
-    };
-
-    //Thread state
-    enum ThreadState
-    {
-        ARK_THREAD_STATE_NONE = 0,
-        ARK_THREAD_STATE_INIT,
-        ARK_THREAD_STATE_LOGIC_RUN_BEGIN,
-        ARK_THREAD_STATE_LOGIC_RUN_END,
-        ARK_THREAD_STATE_LOGIC_ERROR,
-        ARK_THREAD_STATE_LOGIC_CLOSE
-    };
-
-    enum ThreadError
-    {
-        ARK_THREAD_ERROR_CLOSE = 0,
-        ARK_THREAD_ERROR_CONTINUE
-    };
-
-    enum ThreadLogicErrorType
-    {
-        ARK_THREAD_LOGIC_ERROR = 0,
-        ARK_THREAD_LOGIC_TIMEOUT
-    };
 
 #if ARK_PLATFORM == PLATFORM_WIN
     typedef HANDLE ThreadID;
@@ -92,28 +63,6 @@ namespace ark
 
     typedef void(*ThreadExit)(int, AFIPluginManager* plugin_manager);
 
-    class AFIThread
-    {
-    public:
-        AFIThread() {};
-        virtual ~AFIThread() {}
-
-        virtual int GetThreadLogicID() = 0;
-
-        virtual void Lock() = 0;
-
-        virtual void UnLock() = 0;
-
-        virtual void SaveLastRunTimeBegin() = 0;
-
-        virtual void SaveLastRunTimeEnd() = 0;
-
-        virtual void SetThreadState(ThreadState thread_state) = 0;
-
-        virtual ThreadState GetThreadState() = 0;
-
-        virtual AFIPluginManager* GetPluginManager() = 0;
-    };
 
     //thread param
     class AFCThreadParam
