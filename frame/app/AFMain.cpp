@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This source file is part of ARK
 * For the latest info, see https://github.com/QuadHex
 *
@@ -163,6 +163,7 @@ bool ParseArgs(int argc, char* argv[])
     });
 
     args::ValueFlag<std::string> name(parser, "name", "Set application name", { 'n', "name" }, "my-server", args::Options::Required | args::Options::Single);
+    args::ValueFlag<std::string> plugin_cfg(parser, "plugin config path", "Set application plugin config", { 'p', "plugin" }, "test.plugin", args::Options::Required | args::Options::Single);
 
     //start parse argument list
     try
