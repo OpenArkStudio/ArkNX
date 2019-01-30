@@ -1,5 +1,60 @@
 #include "AFCThread.h"
 
+//run thread logic
+#if ARK_PLATFORM == PLATFORM_WIN
+unsigned __stdcall ThreadCallbackRun(void* arg)
+#else
+void* ThreadCallbackRun(void* arg)
+#endif
+{
+    ark::AFCThreadParam* thread_param = (ark::AFCThreadParam*)arg;
+
+    //Init thread func
+    thread_param->thread_init_(thread_param->thread_->GetThreadLogicID(),
+                               thread_param->thread_->GetPluginManager());
+
+    while (ark::ARK_THREAD_STATE_LOGIC_CLOSE != thread_param->thread_->GetThreadState())
+    {
+        thread_param->thread_->Lock();
+
+        int nError = 0;
+        thread_param->thread_->SetThreadState(ark::ARK_THREAD_STATE_LOGIC_RUN_BEGIN);
+        thread_param->thread_->SaveLastRunTimeBegin();
+        ark::ThreadReturn thread_return = thread_param->thread_callback_logic_(nError, thread_param->arg_);
+        thread_param->thread_->SaveLastRunTimeEnd();
+
+        if (ark::ARK_THREAD_RETURN_ONCE == thread_return)
+        {
+            //thread logic just run once
+            break;
+        }
+        else if (ark::ARK_THREAD_RETURN_ERROR == thread_return)
+        {
+            //call thread logic error function
+            thread_param->thread_->SetThreadState(ark::ARK_THREAD_STATE_LOGIC_ERROR);
+            ark::ThreadError thread_error = thread_param->thread_error_logic_(thread_param->thread_->GetThreadLogicID(),
+                                            ark::ARK_THREAD_LOGIC_ERROR,
+                                            nError,
+                                            thread_param->arg_);
+
+            if (ark::ARK_THREAD_ERROR_CLOSE == thread_error)
+            {
+                break;
+            }
+        }
+        else
+        {
+            thread_param->thread_->SetThreadState(ark::ARK_THREAD_STATE_LOGIC_RUN_END);
+            thread_param->thread_->UnLock();
+        }
+    }
+
+    thread_param->thread_->UnLock();
+    thread_param->thread_exit_(thread_param->thread_->GetThreadLogicID(),
+                               thread_param->thread_->GetPluginManager());
+
+    return 0;
+};
 
 ark::AFCThread::AFCThread() :
     thread_logic_id_(0),
