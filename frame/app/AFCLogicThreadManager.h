@@ -34,11 +34,11 @@ namespace ark
 {
     typedef map<int, AFCThread*> mapThreadList;
 
-    class AFIThreadManager
+    class AFILogicThreadManager
     {
     public:
-        AFIThreadManager() {};
-        virtual ~AFIThreadManager() {};
+        AFILogicThreadManager() {};
+        virtual ~AFILogicThreadManager() {};
 
         virtual void CheckThreadList() = 0;
 
@@ -52,7 +52,7 @@ namespace ark
     void* MainThreadCallbackRun(void* arg)
 #endif
     {
-        AFIThreadManager* thread_manager = (AFIThreadManager*)arg;
+        AFILogicThreadManager* thread_manager = (AFILogicThreadManager*)arg;
 
         while (true)
         {
@@ -62,11 +62,11 @@ namespace ark
     };
 
 
-    class AFCThreadManager : public AFIThreadManager
+    class AFCLogicThreadManager : public AFILogicThreadManager
     {
     public:
-        AFCThreadManager();
-        virtual ~AFCThreadManager();
+        AFCLogicThreadManager();
+        virtual ~AFCLogicThreadManager();
 
         void Close();
 

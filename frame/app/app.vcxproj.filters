@@ -3,15 +3,15 @@
   <ItemGroup>
     <ClInclude Include="AFCPluginManager.h" />
     <ClInclude Include="AFCDynLib.h" />
-    <ClInclude Include="AFCThreadManager.h" />
     <ClInclude Include="AFCThread.h" />
     <ClInclude Include="..\base\AFDateTime.hpp" />
+    <ClInclude Include="AFCLogicThreadManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AFCDynLib.cpp" />
     <ClCompile Include="AFCPluginManager.cpp" />
     <ClCompile Include="AFMain.cpp" />
-    <ClCompile Include="AFCThreadManager.cpp" />
     <ClCompile Include="AFCThread.cpp" />
+    <ClCompile Include="AFCLogicThreadManager.cpp" />
   </ItemGroup>
 </Project>
