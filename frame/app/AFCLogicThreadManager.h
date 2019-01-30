@@ -23,8 +23,7 @@
 
 #include "base/AFMacros.hpp"
 #include "AFCThread.h"
-#include <vector>
-#include <map>
+#include "interface/AFILogicThreadManager.h"
 
 using namespace std;
 
@@ -32,22 +31,11 @@ using namespace std;
 
 namespace ark
 {
-    typedef map<int, AFCThread*> mapThreadList;
-
-    class AFILogicThreadManager
-    {
-    public:
-        AFILogicThreadManager() {};
-        virtual ~AFILogicThreadManager() {};
-
-        virtual void CheckThreadList() = 0;
-
-        virtual int64_t GetMainThreadChekInterval() = 0;
-    };
-
     class AFCLogicThreadManager : public AFILogicThreadManager
     {
     public:
+        typedef map<int, AFCThread*> mapThreadList;
+
         AFCLogicThreadManager();
         virtual ~AFCLogicThreadManager();
 
