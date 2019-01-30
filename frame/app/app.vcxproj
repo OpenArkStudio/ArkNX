@@ -102,15 +102,15 @@
   <ItemGroup>
     <ClInclude Include="..\base\AFDateTime.hpp" />
     <ClInclude Include="AFCDynLib.h" />
+    <ClInclude Include="AFCLogicThreadManager.h" />
     <ClInclude Include="AFCPluginManager.h" />
     <ClInclude Include="AFCThread.h" />
-    <ClInclude Include="AFCThreadManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AFCDynLib.cpp" />
+    <ClCompile Include="AFCLogicThreadManager.cpp" />
     <ClCompile Include="AFCPluginManager.cpp" />
     <ClCompile Include="AFCThread.cpp" />
-    <ClCompile Include="AFCThreadManager.cpp" />
     <ClCompile Include="AFMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

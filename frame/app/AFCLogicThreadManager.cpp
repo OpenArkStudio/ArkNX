@@ -1,6 +1,6 @@
-#include "AFCThreadManager.h"
+#include "AFCLogicThreadManager.h"
 
-ark::AFCThreadManager::AFCThreadManager() :
+ark::AFCLogicThreadManager::AFCLogicThreadManager() :
     main_check_time_interval_(0),
     plugin_manager_(NULL)
 {
@@ -11,7 +11,7 @@ ark::AFCThreadManager::AFCThreadManager() :
 #endif
 }
 
-ark::AFCThreadManager::~AFCThreadManager()
+ark::AFCLogicThreadManager::~AFCLogicThreadManager()
 {
     Close();
 
@@ -22,7 +22,7 @@ ark::AFCThreadManager::~AFCThreadManager()
     }
 }
 
-void ark::AFCThreadManager::Close()
+void ark::AFCLogicThreadManager::Close()
 {
     Lock();
     vector<AFCThread*> vec_thread_list;
@@ -49,7 +49,7 @@ void ark::AFCThreadManager::Close()
     UnLock();
 }
 
-void ark::AFCThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager)
+void ark::AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager)
 {
     main_check_time_interval_ = main_check_time_interval;
     plugin_manager_           = plugin_manager;
@@ -63,7 +63,7 @@ void ark::AFCThreadManager::Init(int64_t main_check_time_interval, AFIPluginMana
 #endif
 }
 
-bool ark::AFCThreadManager::CreateThread(int thread_logic_id,
+bool ark::AFCLogicThreadManager::CreateThread(int thread_logic_id,
         ThreadInit thread_init,
         ThreadCallbackLogic thread_callback_logic,
         ThreadErrorLogic thread_callback_error,
@@ -111,7 +111,7 @@ bool ark::AFCThreadManager::CreateThread(int thread_logic_id,
 
 }
 
-bool ark::AFCThreadManager::KillThread(int thread_logic_id)
+bool ark::AFCLogicThreadManager::KillThread(int thread_logic_id)
 {
     Lock();
     mapThreadList::iterator f = thread_list_.find(thread_logic_id);
@@ -135,7 +135,7 @@ bool ark::AFCThreadManager::KillThread(int thread_logic_id)
 
 }
 
-bool ark::AFCThreadManager::IsAlive(int thread_logic_id)
+bool ark::AFCLogicThreadManager::IsAlive(int thread_logic_id)
 {
     Lock();
     mapThreadList::iterator f = thread_list_.find(thread_logic_id);
@@ -154,7 +154,7 @@ bool ark::AFCThreadManager::IsAlive(int thread_logic_id)
     }
 }
 
-bool ark::AFCThreadManager::Pause(int thread_logic_id)
+bool ark::AFCLogicThreadManager::Pause(int thread_logic_id)
 {
     Lock();
     mapThreadList::iterator f = thread_list_.find(thread_logic_id);
@@ -173,7 +173,7 @@ bool ark::AFCThreadManager::Pause(int thread_logic_id)
     }
 }
 
-bool ark::AFCThreadManager::Resume(int thread_logic_id)
+bool ark::AFCLogicThreadManager::Resume(int thread_logic_id)
 {
     Lock();
     mapThreadList::iterator f = thread_list_.find(thread_logic_id);
@@ -192,10 +192,8 @@ bool ark::AFCThreadManager::Resume(int thread_logic_id)
     }
 }
 
-void ark::AFCThreadManager::CheckThreadList()
+void ark::AFCLogicThreadManager::CheckThreadList()
 {
-    Lock();
-
     AFDateTime date_now;
 
     for (mapThreadList::iterator b = thread_list_.begin(); b != thread_list_.end(); ++b)
@@ -213,16 +211,14 @@ void ark::AFCThreadManager::CheckThreadList()
             }
         }
     }
-
-    UnLock();
 }
 
-int64_t ark::AFCThreadManager::GetMainThreadChekInterval()
+int64_t ark::AFCLogicThreadManager::GetMainThreadChekInterval()
 {
     return main_check_time_interval_;
 }
 
-void ark::AFCThreadManager::Lock()
+void ark::AFCLogicThreadManager::Lock()
 {
 #if ARK_PLATFORM == PLATFORM_WIN
     EnterCriticalSection(main_thread_mutex_);
@@ -231,7 +227,7 @@ void ark::AFCThreadManager::Lock()
 #endif
 }
 
-void ark::AFCThreadManager::UnLock()
+void ark::AFCLogicThreadManager::UnLock()
 {
 #ifdef WIN32
     LeaveCriticalSection(main_thread_mutex_);
