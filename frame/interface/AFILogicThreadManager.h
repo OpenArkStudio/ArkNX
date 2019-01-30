@@ -33,7 +33,7 @@ namespace ark
 
         virtual void CheckThreadList() = 0;
 
-        virtual int64_t GetMainThreadChekInterval() = 0;
+        virtual int64_t GetMainThreadCheckInterval() = 0;
     };
 
 }

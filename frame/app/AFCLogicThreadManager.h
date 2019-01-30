@@ -60,7 +60,7 @@ namespace ark
 
         virtual void CheckThreadList();
 
-        virtual int64_t GetMainThreadChekInterval();
+        virtual int64_t GetMainThreadCheckInterval();
 
     private:
         void Lock();

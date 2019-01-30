@@ -1,0 +1,12 @@
+<xml>
+	<plugins path="../lib/">
+		<thread>
+			<plugin name="TestPlugin" />
+		</thread>
+		<!--
+		<thread>
+			<plugin name="some_plugin" />
+		</thread>
+		-->
+	</plugins>
+</xml>
