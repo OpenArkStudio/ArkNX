@@ -1,5 +1,21 @@
 #include "AFCLogicThreadManager.h"
 
+//run mian thread logic
+#if ARK_PLATFORM == PLATFORM_WIN
+unsigned __stdcall MainThreadCallbackRun(void* arg)
+#else
+void* MainThreadCallbackRun(void* arg)
+#endif
+{
+    ark::AFILogicThreadManager* thread_manager = (ark::AFILogicThreadManager*)arg;
+
+    while (true)
+    {
+        thread_manager->CheckThreadList();
+        ARK_SLEEP((int)thread_manager->GetMainThreadChekInterval());
+    }
+};
+
 ark::AFCLogicThreadManager::AFCLogicThreadManager() :
     main_check_time_interval_(0),
     plugin_manager_(NULL)
@@ -57,7 +73,7 @@ void ark::AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPlugi
     //create main thread
 #if ARK_PLATFORM == PLATFORM_WIN
     unsigned int thread_id = 0;
-    _beginthreadex(NULL, 0, MainThreadCallbackRun, (PVOID)(AFIThreadManager* )this, 0, &thread_id);
+    _beginthreadex(NULL, 0, MainThreadCallbackRun, (PVOID)(AFILogicThreadManager* )this, 0, &thread_id);
 #else
     pthread_create(&thread_id_, NULL, ThreadCallbackRun, (void*)(AFIThreadManager*)this);
 #endif

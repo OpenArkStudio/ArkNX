@@ -45,23 +45,6 @@ namespace ark
         virtual int64_t GetMainThreadChekInterval() = 0;
     };
 
-    //run mian thread logic
-#if ARK_PLATFORM == PLATFORM_WIN
-    unsigned MainThreadCallbackRun(void* arg)
-#else
-    void* MainThreadCallbackRun(void* arg)
-#endif
-    {
-        AFILogicThreadManager* thread_manager = (AFILogicThreadManager*)arg;
-
-        while (true)
-        {
-            thread_manager->CheckThreadList();
-            ARK_SLEEP((int)thread_manager->GetMainThreadChekInterval());
-        }
-    };
-
-
     class AFCLogicThreadManager : public AFILogicThreadManager
     {
     public:
