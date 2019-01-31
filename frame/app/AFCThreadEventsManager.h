@@ -24,6 +24,7 @@
 #include "base/AFMacros.hpp"
 #include "interface/AFIMaintainThreadManager.h"
 #include "interface/AFIThread.h"
+#include "interface/AFIEventThreadManager.h"
 #include "AFCThreadEvent.h"
 #include <map>
 #include <deque>
@@ -32,7 +33,9 @@ using namespace std;
 
 namespace ark
 {
-    class AFCThreadEventsManager : public AFIMaintainThreadManager
+    typedef void(*EventTimeout)(int, AFCThreadEvent);
+
+    class AFCThreadEventsManager : public AFIMaintainThreadManager, AFIEventThreadManager
     {
     public:
         AFCThreadEventsManager();
@@ -40,15 +43,15 @@ namespace ark
 
         void Close();
 
-        void Init(int max_thread_events_count);
+        void Init(int max_thread_events_count, EventTimeout event_timeout_func);
 
         virtual void CheckThreadList();
 
         virtual int64_t GetMainThreadCheckInterval();
 
-        bool AddEvent(int thread_logic_id, AFCThreadEvent thread_event_);
+        virtual bool AddEvent(int thread_logic_id, AFCThreadEvent& thread_event);
 
-        bool GetEvent(int thread_logic_id, AFCThreadEvent& thread_event);
+        virtual bool GetEvent(int thread_logic_id, AFCThreadEvent& thread_event);
 
     private:
         void Lock();
@@ -56,14 +59,15 @@ namespace ark
         void UnLock();
 
     private:
-        typedef deque<AFCThreadEvent> vecEventList;
-        typedef map<int, vecEventList*> mapThreadEvents;
+        typedef deque<AFCThreadEvent> queEventList;
+        typedef map<int, queEventList*> mapThreadEvents;
 
     private:
         int             max_thread_events_count_;
         int64_t         main_check_time_interval_;
         mapThreadEvents map_thread_events_;
         ThreadMutex*    events_thread_mutex_;
+        EventTimeout    event_timeout_func_;
     };
 }
 
