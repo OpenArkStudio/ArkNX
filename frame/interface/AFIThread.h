@@ -21,6 +21,7 @@
 #ifndef _AFITHREAD_H
 #define _AFITHREAD_H
 
+#include "base/AFPlatform.hpp"
 
 namespace ark
 {
@@ -78,6 +79,26 @@ namespace ark
 
         virtual AFIPluginManager* GetPluginManager() = 0;
     };
+
+#if ARK_PLATFORM == PLATFORM_WIN
+    typedef HANDLE ThreadID;
+    typedef CRITICAL_SECTION ThreadMutex;
+    typedef CONDITION_VARIABLE ThreadCond;
+#define HANDEL_ERROR_VALUE INVALID_HANDLE_VALUE
+#else
+    typedef pthread_t ThreadID;
+    typedef pthread_mutex_t ThreadMutex;
+    typedef pthread_cond_t ThreadCond;
+#define HANDEL_ERROR_VALUE -1
+#endif
+
+    typedef void(*ThreadInit)(int, AFIPluginManager* plugin_manager);
+
+    typedef ThreadReturn(*ThreadCallbackLogic)(int&, void*);
+
+    typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int, void*);
+
+    typedef void(*ThreadExit)(int, AFIPluginManager* plugin_manager);
 
 }
 

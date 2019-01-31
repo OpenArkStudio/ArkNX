@@ -18,18 +18,17 @@
 *
 */
 
-#ifndef _AFITHREADMANAGER_H
-#define _AFITHREADMANAGER_H
-
+#ifndef _AFIMAINTAINTHREADMANAGER_H
+#define _AFIMAINTAINTHREADMANAGER_H
 
 namespace ark
 {
-
-    class AFILogicThreadManager
+    //main thread maintain interface
+    class AFIMaintainThreadManager
     {
     public:
-        AFILogicThreadManager() {};
-        virtual ~AFILogicThreadManager() {};
+        AFIMaintainThreadManager() {};
+        virtual ~AFIMaintainThreadManager() {};
 
         virtual void CheckThreadList() = 0;
 
