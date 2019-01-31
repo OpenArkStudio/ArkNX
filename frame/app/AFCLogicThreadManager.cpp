@@ -72,12 +72,12 @@ namespace ark
         main_check_time_interval_ = main_check_time_interval;
         plugin_manager_           = plugin_manager;
 
-        //create main thread
+        //create maintain thread
 #if ARK_PLATFORM == PLATFORM_WIN
         unsigned int thread_id = 0;
-        _beginthreadex(NULL, 0, MainThreadCallbackRun, (PVOID)(AFILogicThreadManager*)this, 0, &thread_id);
+        _beginthreadex(NULL, 0, MainThreadCallbackRun, (PVOID)(AFIMaintainThreadManager*)this, 0, &thread_id);
 #else
-        pthread_create(&thread_id_, NULL, ThreadCallbackRun, (void*)(AFIThreadManager*)this);
+        pthread_create(&thread_id_, NULL, MainThreadCallbackRun, (void*)(AFIThreadManager*)this);
 #endif
     }
 

@@ -18,32 +18,23 @@
 *
 */
 
-#ifndef _AFCPROCESS_H
-#define _AFCPROCESS_H
+#ifndef _AFIMAINTAINTHREADMANAGER_H
+#define _AFIMAINTAINTHREADMANAGER_H
 
-#include "base/AFPlatform.hpp"
-#include "base/AFDateTime.hpp"
-
-#if ARK_PLATFORM == PLATFORM_WIN
-#include <windows.h>
-#include <process.h>
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#else
-#include <stdio.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <errno.h>
-#endif
-
-class AFCProcess
+namespace ark
 {
-public:
-    AFCProcess();
-    ~AFCProcess();
+    //main thread maintain interface
+    class AFIMaintainThreadManager
+    {
+    public:
+        AFIMaintainThreadManager() {};
+        virtual ~AFIMaintainThreadManager() {};
 
-};
+        virtual void CheckThreadList() = 0;
 
-#endif
+        virtual int64_t GetMainThreadCheckInterval() = 0;
+    };
+
+}
+
+#endif //_AFITHREADMANAGER_H
