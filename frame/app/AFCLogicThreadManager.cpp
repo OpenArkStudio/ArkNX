@@ -216,6 +216,8 @@ namespace ark
     {
         AFDateTime date_now;
 
+        Lock();
+
         for (mapThreadList::iterator b = thread_list_.begin(); b != thread_list_.end(); ++b)
         {
             AFCThread* thread_info = (AFCThread*)b->second;
@@ -231,6 +233,8 @@ namespace ark
                 }
             }
         }
+
+        UnLock();
     }
 
     int64_t AFCLogicThreadManager::GetMainThreadCheckInterval()
