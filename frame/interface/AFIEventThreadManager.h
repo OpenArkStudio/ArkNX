@@ -18,21 +18,23 @@
 *
 */
 
-#ifndef _AFIMAINTAINTHREADMANAGER_H
-#define _AFIMAINTAINTHREADMANAGER_H
+#ifndef _AFIEVENTTHREADMANAGER_H
+#define _AFIEVENTTHREADMANAGER_H
+
+#include "AFCThreadEvent.h"
 
 namespace ark
 {
     //main thread maintain interface
-    class AFIMaintainThreadManager
+    class AFIEventThreadManager
     {
     public:
-        AFIMaintainThreadManager() {};
-        virtual ~AFIMaintainThreadManager() {};
+        AFIEventThreadManager() {};
+        virtual ~AFIEventThreadManager() {};
 
-        virtual void CheckThreadList() = 0;
+        virtual bool AddEvent(int thread_logic_id, AFCThreadEvent& thread_event) = 0;
 
-        virtual int64_t GetMainThreadCheckInterval() = 0;
+        virtual bool GetEvent(int thread_logic_id, AFCThreadEvent& thread_event) = 0;
     };
 
 }

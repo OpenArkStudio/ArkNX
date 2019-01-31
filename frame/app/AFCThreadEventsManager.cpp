@@ -45,7 +45,7 @@ namespace ark
 
         for (mapThreadEvents::iterator b = map_thread_events_.begin(); b != map_thread_events_.end(); ++b)
         {
-            vecEventList* event_list = (vecEventList*)b->second;
+            queEventList* event_list = (queEventList*)b->second;
             event_list->clear();
             delete event_list;
         }
@@ -55,9 +55,10 @@ namespace ark
         UnLock();
     }
 
-    void AFCThreadEventsManager::Init(int max_thread_events_count)
+    void AFCThreadEventsManager::Init(int max_thread_events_count, EventTimeout event_timeout_func)
     {
         max_thread_events_count_ = max_thread_events_count;
+        event_timeout_func_      = event_timeout_func;
 
         //create maintain thread
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -76,13 +77,15 @@ namespace ark
 
         for (mapThreadEvents::iterator b = map_thread_events_.begin(); b != map_thread_events_.end(); ++b)
         {
-            vecEventList* event_list = (vecEventList*)b->second;
+            queEventList* event_list = (queEventList*)b->second;
+            int thread_logic_id = (int)b->first;
 
-            for (vecEventList::iterator vec_b = event_list->begin(); vec_b != event_list->end();)
+            for (queEventList::iterator vec_b = event_list->begin(); vec_b != event_list->end();)
             {
                 if ((*vec_b).IsTimeout(date_now) == true)
                 {
                     //need delete
+                    event_timeout_func_(thread_logic_id, (*vec_b));
                     vec_b = event_list->erase(vec_b);
                 }
                 else
@@ -100,7 +103,7 @@ namespace ark
         return main_check_time_interval_;
     }
 
-    bool AFCThreadEventsManager::AddEvent(int thread_logic_id, AFCThreadEvent thread_event_)
+    bool AFCThreadEventsManager::AddEvent(int thread_logic_id, AFCThreadEvent& thread_event)
     {
         Lock();
 
@@ -109,14 +112,14 @@ namespace ark
         if (f == map_thread_events_.end())
         {
             //thread no exist
-            vecEventList* event_list = new vecEventList();
-            event_list->push_back(thread_event_);
+            queEventList* event_list = new queEventList();
+            event_list->push_back(thread_event);
             map_thread_events_.insert(mapThreadEvents::value_type(thread_logic_id, event_list));
         }
         else
         {
             //thread exist
-            vecEventList* event_list = (vecEventList*)f->second;
+            queEventList* event_list = (queEventList*)f->second;
 
             if (event_list->size() >= max_thread_events_count_)
             {
@@ -125,7 +128,7 @@ namespace ark
             }
             else
             {
-                event_list->push_back(thread_event_);
+                event_list->push_back(thread_event);
             }
         }
 
@@ -145,7 +148,7 @@ namespace ark
             return false;
         }
 
-        vecEventList* event_list = (vecEventList*)f->second;
+        queEventList* event_list = (queEventList*)f->second;
 
         if (event_list->size() == 0)
         {
@@ -153,7 +156,7 @@ namespace ark
             return false;
         }
 
-        thread_event = (*event_list)[0];
+        thread_event = event_list->front();
         event_list->pop_front();
 
         UnLock();
