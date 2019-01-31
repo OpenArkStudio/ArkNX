@@ -22,6 +22,21 @@
 #define _AFITHREAD_H
 
 #include "base/AFPlatform.hpp"
+#include "interface/AFIPluginManager.h"
+
+#if ARK_PLATFORM == PLATFORM_WIN
+#include <windows.h>
+#include <process.h>
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#else
+#include <stdio.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <errno.h>
+#endif
 
 namespace ark
 {
