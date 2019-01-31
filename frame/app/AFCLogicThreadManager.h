@@ -23,6 +23,7 @@
 
 #include "base/AFMacros.hpp"
 #include "AFCThread.h"
+#include "interface/AFIMaintainThreadManager.h"
 #include "interface/AFILogicThreadManager.h"
 
 using namespace std;
@@ -31,7 +32,7 @@ using namespace std;
 
 namespace ark
 {
-    class AFCLogicThreadManager : public AFILogicThreadManager
+    class AFCLogicThreadManager : public AFIMaintainThreadManager, AFILogicThreadManager
     {
     public:
         typedef map<int, AFCThread*> mapThreadList;
@@ -43,20 +44,20 @@ namespace ark
 
         void Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager);
 
-        bool CreateThread(int thread_logic_id,
-                          ThreadInit thread_init,
-                          ThreadCallbackLogic thread_callback_logic,
-                          ThreadErrorLogic thread_callback_error,
-                          ThreadExit thread_exit,
-                          void* arg);
+        virtual bool CreateThread(int thread_logic_id,
+                                  ThreadInit thread_init,
+                                  ThreadCallbackLogic thread_callback_logic,
+                                  ThreadErrorLogic thread_callback_error,
+                                  ThreadExit thread_exit,
+                                  void* arg);
 
-        bool KillThread(int thread_logic_id);
+        virtual bool KillThread(int thread_logic_id);
 
-        bool IsAlive(int thread_logic_id);
+        virtual bool IsAlive(int thread_logic_id);
 
-        bool Pause(int thread_logic_id);
+        virtual bool Pause(int thread_logic_id);
 
-        bool Resume(int thread_logic_id);
+        virtual bool Resume(int thread_logic_id);
 
         virtual void CheckThreadList();
 

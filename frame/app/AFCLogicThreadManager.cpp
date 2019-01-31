@@ -2,8 +2,6 @@
 
 namespace ark
 {
-
-
     //run mian thread logic
 #if ARK_PLATFORM == PLATFORM_WIN
     unsigned __stdcall MainThreadCallbackRun(void* arg)
@@ -11,7 +9,7 @@ namespace ark
     void* MainThreadCallbackRun(void* arg)
 #endif
     {
-        AFILogicThreadManager* thread_manager = (AFILogicThreadManager*)arg;
+        AFIMaintainThreadManager* thread_manager = (AFIMaintainThreadManager*)arg;
 
         while (true)
         {
@@ -253,7 +251,7 @@ namespace ark
 
     void AFCLogicThreadManager::UnLock()
     {
-#ifdef ARK_PLATFORM == PLATFORM_WIN
+#if ARK_PLATFORM == PLATFORM_WIN
         LeaveCriticalSection(main_thread_mutex_);
 #else
         pthread_mutex_unlock(main_thread_mutex_);
