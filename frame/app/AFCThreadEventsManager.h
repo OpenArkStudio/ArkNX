@@ -23,10 +23,10 @@
 
 #include "base/AFMacros.hpp"
 #include "interface/AFIMaintainThreadManager.h"
-#include "interface/AFIThreadEvent.h"
 #include "interface/AFIThread.h"
+#include "AFCThreadEvent.h"
 #include <map>
-#include <vector>
+#include <deque>
 
 using namespace std;
 
@@ -40,11 +40,15 @@ namespace ark
 
         void Close();
 
-        void Init(int max_thread_events_count, int max_event_timeout);
+        void Init(int max_thread_events_count);
 
         virtual void CheckThreadList();
 
         virtual int64_t GetMainThreadCheckInterval();
+
+        bool AddEvent(int thread_logic_id, AFCThreadEvent thread_event_);
+
+        bool GetEvent(int thread_logic_id, AFCThreadEvent& thread_event);
 
     private:
         void Lock();
@@ -52,12 +56,11 @@ namespace ark
         void UnLock();
 
     private:
-        typedef vector<AFIThreadEvent> vecEventList;
+        typedef deque<AFCThreadEvent> vecEventList;
         typedef map<int, vecEventList*> mapThreadEvents;
 
     private:
         int             max_thread_events_count_;
-        int             max_event_timeout_;
         int64_t         main_check_time_interval_;
         mapThreadEvents map_thread_events_;
         ThreadMutex*    events_thread_mutex_;
