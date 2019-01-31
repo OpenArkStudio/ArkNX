@@ -18,7 +18,6 @@ namespace ark
     };
 
     AFCThreadEventsManager::AFCThreadEventsManager() : max_thread_events_count_(100),
-        max_event_timeout_(1000),
         main_check_time_interval_(1000),
         events_thread_mutex_(NULL)
     {
@@ -56,10 +55,9 @@ namespace ark
         UnLock();
     }
 
-    void AFCThreadEventsManager::Init(int max_thread_events_count, int max_event_timeout)
+    void AFCThreadEventsManager::Init(int max_thread_events_count)
     {
         max_thread_events_count_ = max_thread_events_count;
-        max_event_timeout_       = max_event_timeout;
 
         //create maintain thread
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -100,6 +98,66 @@ namespace ark
     int64_t AFCThreadEventsManager::GetMainThreadCheckInterval()
     {
         return main_check_time_interval_;
+    }
+
+    bool AFCThreadEventsManager::AddEvent(int thread_logic_id, AFCThreadEvent thread_event_)
+    {
+        Lock();
+
+        mapThreadEvents::iterator f = map_thread_events_.find(thread_logic_id);
+
+        if (f == map_thread_events_.end())
+        {
+            //thread no exist
+            vecEventList* event_list = new vecEventList();
+            event_list->push_back(thread_event_);
+            map_thread_events_.insert(mapThreadEvents::value_type(thread_logic_id, event_list));
+        }
+        else
+        {
+            //thread exist
+            vecEventList* event_list = (vecEventList*)f->second;
+
+            if (event_list->size() >= max_thread_events_count_)
+            {
+                UnLock();
+                return false;
+            }
+            else
+            {
+                event_list->push_back(thread_event_);
+            }
+        }
+
+        UnLock();
+        return true;
+    }
+
+    bool AFCThreadEventsManager::GetEvent(int thread_logic_id, AFCThreadEvent& thread_event)
+    {
+        Lock();
+
+        mapThreadEvents::iterator f = map_thread_events_.find(thread_logic_id);
+
+        if (f == map_thread_events_.end())
+        {
+            UnLock();
+            return false;
+        }
+
+        vecEventList* event_list = (vecEventList*)f->second;
+
+        if (event_list->size() == 0)
+        {
+            UnLock();
+            return false;
+        }
+
+        thread_event = (*event_list)[0];
+        event_list->pop_front();
+
+        UnLock();
+        return true;
     }
 
     void AFCThreadEventsManager::Lock()
