@@ -1,21 +1,61 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="AFCPluginManager.h" />
-    <ClInclude Include="AFCDynLib.h" />
-    <ClInclude Include="AFCThread.h" />
-    <ClInclude Include="..\base\AFDateTime.hpp" />
-    <ClInclude Include="AFCLogicThreadManager.h" />
-    <ClInclude Include="AFCThreadEventsManager.h" />
-    <ClInclude Include="AFCThreadEvent.h" />
+    <ClInclude Include="AFCDynLib.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AFCLogicThreadManager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AFCPluginManager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\base\AFDateTime.hpp">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AFCThread.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AFCThreadEvent.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AFCThreadEventsManager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\TestEventsManager.h">
+      <Filter>test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AFCDynLib.cpp" />
-    <ClCompile Include="AFCPluginManager.cpp" />
     <ClCompile Include="AFMain.cpp" />
-    <ClCompile Include="AFCThread.cpp" />
-    <ClCompile Include="AFCLogicThreadManager.cpp" />
-    <ClCompile Include="AFCThreadEventsManager.cpp" />
-    <ClCompile Include="AFCThreadEvent.cpp" />
+    <ClCompile Include="AFCDynLib.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AFCLogicThreadManager.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AFCPluginManager.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AFCThread.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AFCThreadEvent.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AFCThreadEventsManager.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\TestEventsManager.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="test">
+      <UniqueIdentifier>{ab05bd17-8368-4e81-bdd1-1a0c9d66ef8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{67094392-83b7-41ca-87fc-f4bf388b8dbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

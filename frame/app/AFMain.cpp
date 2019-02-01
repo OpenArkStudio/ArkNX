@@ -23,6 +23,7 @@
 #include "base/AFDateTime.hpp"
 #include "base/AFMisc.hpp"
 #include "AFCPluginManager.h"
+#include "../test/TestEventsManager.h"
 
 using namespace ark;
 
@@ -232,6 +233,7 @@ void MainLoop()
 
 int main(int argc, char* argv[])
 {
+	/*
     if (!ParseArgs(argc, argv))
     {
         CONSOLE_INFO_LOG << "Application parameter is invalid, please check it..." << std::endl;
@@ -264,6 +266,12 @@ int main(int argc, char* argv[])
     AFCPluginManager::get()->Shut();
 
     g_cmd_thread.join();
+	*/
+
+	//test code
+	AFCThreadEventsManager thread_event_manager;
+	UnitTestEventsManager(thread_event_manager);
+	getchar();
 
     return 0;
 }
