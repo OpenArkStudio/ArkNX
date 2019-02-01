@@ -24,8 +24,10 @@ namespace ark
     {
 #if ARK_PLATFORM == PLATFORM_WIN
         main_thread_mutex_ = new CRITICAL_SECTION();
+        InitializeCriticalSection(main_thread_mutex_);
 #else
         main_thread_mutex_ = new pthread_mutex_t();
+        pthread_mutex_init(main_thread_mutex_, NULL);
 #endif
     }
 

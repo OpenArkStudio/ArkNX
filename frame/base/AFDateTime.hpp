@@ -67,6 +67,7 @@ namespace ark
             {
                 this->_span = timespan._span;
             }
+
             return *this;
         }
 
@@ -525,7 +526,10 @@ namespace ark
             //find the first firstDayOfWeek.
             int baseDay = 1;
 
-            while (AFDateTime(GetYear(), 1, baseDay).GetDayOfWeek() != firstDayOfWeek) ++baseDay;
+            while (AFDateTime(GetYear(), 1, baseDay).GetDayOfWeek() != firstDayOfWeek)
+            {
+                ++baseDay;
+            }
 
             int day = GetDayOfYear();
             int offs = baseDay <= 4 ? 0 : 1;
@@ -586,11 +590,17 @@ namespace ark
             int hour = GetHour();
 
             if (hour < 1)
+            {
                 return 12;
+            }
             else if (hour > 12)
+            {
                 return hour - 12;
+            }
             else
+            {
                 return hour;
+            }
         }
 
         //Returns true if hour < 12;
@@ -708,9 +718,13 @@ namespace ark
             static int daysOfMonthTable[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
             if (month == 2 && IsLeapYear(year))
+            {
                 return 29;
+            }
             else
+            {
                 return daysOfMonthTable[month];
+            }
         }
 
         //Checks if the given date and time is valid

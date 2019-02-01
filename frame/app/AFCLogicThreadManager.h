@@ -32,7 +32,7 @@ using namespace std;
 
 namespace ark
 {
-    class AFCLogicThreadManager : public AFIMaintainThreadManager, AFILogicThreadManager
+    class AFCLogicThreadManager : public AFIMaintainThreadManager, public AFILogicThreadManager
     {
     public:
         typedef map<int, AFCThread*> mapThreadList;

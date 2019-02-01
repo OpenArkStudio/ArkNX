@@ -35,7 +35,7 @@ namespace ark
 {
     typedef void(*EventTimeout)(int, AFCThreadEvent);
 
-    class AFCThreadEventsManager : public AFIMaintainThreadManager, AFIEventThreadManager
+    class AFCThreadEventsManager : public AFIMaintainThreadManager, public AFIEventThreadManager
     {
     public:
         AFCThreadEventsManager();

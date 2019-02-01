@@ -8,7 +8,7 @@ namespace ark
     void* EventsThreadCallbackRun(void* arg)
 #endif
     {
-        AFIMaintainThreadManager* thread_manager = (AFIMaintainThreadManager*)arg;
+        AFIMaintainThreadManager* thread_manager = (AFIMaintainThreadManager* )arg;
 
         while (true)
         {
@@ -23,8 +23,10 @@ namespace ark
     {
 #if ARK_PLATFORM == PLATFORM_WIN
         events_thread_mutex_ = new CRITICAL_SECTION();
+        InitializeCriticalSection(events_thread_mutex_);
 #else
         events_thread_mutex_ = new pthread_mutex_t();
+        pthread_mutex_init(events_thread_mutex_, NULL);
 #endif
     }
 
