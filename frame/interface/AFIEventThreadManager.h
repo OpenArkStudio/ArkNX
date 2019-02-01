@@ -21,7 +21,7 @@
 #ifndef _AFIEVENTTHREADMANAGER_H
 #define _AFIEVENTTHREADMANAGER_H
 
-#include "AFCThreadEvent.h"
+#include "AFIThreadEvent.h"
 
 namespace ark
 {
@@ -32,9 +32,9 @@ namespace ark
         AFIEventThreadManager() {};
         virtual ~AFIEventThreadManager() {};
 
-        virtual bool AddEvent(int thread_logic_id, AFCThreadEvent& thread_event) = 0;
+        virtual bool AddEvent(int thread_logic_id, AFIThreadEvent* thread_event) = 0;
 
-        virtual bool GetEvent(int thread_logic_id, AFCThreadEvent& thread_event) = 0;
+        virtual bool GetEvent(int thread_logic_id, AFIThreadEvent*& thread_event) = 0;
     };
 
 }
