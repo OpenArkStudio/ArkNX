@@ -23,8 +23,15 @@ namespace ark
             int nError = 0;
             thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_BEGIN);
             thread_param->thread_->SaveLastRunTimeBegin();
-            ThreadReturn thread_return = thread_param->thread_callback_logic_(nError, thread_param->arg_);
+            AFIThreadEvent* thread_event = thread_param->thread_->GetThreadEvent();
+            ThreadReturn thread_return = thread_param->thread_callback_logic_(thread_event, nError, thread_param->arg_);
             thread_param->thread_->SaveLastRunTimeEnd();
+
+            //release
+            if (NULL != thread_event)
+            {
+                delete thread_event;
+            }
 
             if (ARK_THREAD_RETURN_ONCE == thread_return)
             {
@@ -65,7 +72,8 @@ namespace ark
         thread_mutex_(NULL),
         thread_cond_(NULL),
         thread_state_(ARK_THREAD_STATE_NONE),
-        plugin_manager_(NULL)
+        plugin_manager_(NULL),
+        event_manager_(NULL)
     {
 #if ARK_PLATFORM == PLATFORM_WIN
         thread_mutex_ = new CRITICAL_SECTION();
@@ -97,7 +105,8 @@ namespace ark
                                  ThreadErrorLogic thread_callback_error,
                                  ThreadExit thread_exit,
                                  void* arg,
-                                 AFIPluginManager* plugin_manager)
+                                 AFIPluginManager* plugin_manager,
+                                 AFIEventThreadManager* event_manager)
     {
         if (ARK_THREAD_STATE_NONE != thread_state_)
         {
@@ -115,6 +124,7 @@ namespace ark
         thread_logic_id_                     = thread_logic_id;
         thread_error_logic_                  = thread_callback_error;
         plugin_manager_                      = plugin_manager;
+        event_manager_                       = event_manager;
 
 #if ARK_PLATFORM == PLATFORM_WIN
         unsigned int thread_id = 0;
@@ -271,6 +281,11 @@ namespace ark
     AFIPluginManager* AFCThread::GetPluginManager()
     {
         return plugin_manager_;
+    }
+
+    ark::AFIThreadEvent* AFCThread::GetThreadEvent()
+    {
+        return event_manager_->GetEvent(thread_logic_id_);
     }
 
     int AFCThread::GetThreadLogicID()

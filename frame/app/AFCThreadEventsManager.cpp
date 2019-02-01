@@ -138,7 +138,7 @@ namespace ark
         return true;
     }
 
-    bool AFCThreadEventsManager::GetEvent(int thread_logic_id, AFIThreadEvent*& thread_event)
+    AFIThreadEvent* AFCThreadEventsManager::GetEvent(int thread_logic_id)
     {
         Lock();
 
@@ -147,7 +147,7 @@ namespace ark
         if (f == map_thread_events_.end())
         {
             UnLock();
-            return false;
+            return NULL;
         }
 
         queEventList* event_list = (queEventList*)f->second;
@@ -155,14 +155,14 @@ namespace ark
         if (event_list->size() == 0)
         {
             UnLock();
-            return false;
+            return NULL;
         }
 
-        thread_event = event_list->front();
+        AFIThreadEvent* thread_event = event_list->front();
         event_list->pop_front();
 
         UnLock();
-        return true;
+        return thread_event;
     }
 
     void AFCThreadEventsManager::Lock()

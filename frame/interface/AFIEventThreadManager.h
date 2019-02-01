@@ -34,7 +34,7 @@ namespace ark
 
         virtual bool AddEvent(int thread_logic_id, AFIThreadEvent* thread_event) = 0;
 
-        virtual bool GetEvent(int thread_logic_id, AFIThreadEvent*& thread_event) = 0;
+        virtual AFIThreadEvent* GetEvent(int thread_logic_id) = 0;
     };
 
 }

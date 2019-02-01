@@ -51,7 +51,7 @@ namespace ark
 
         virtual bool AddEvent(int thread_logic_id, AFIThreadEvent* thread_event);
 
-        virtual bool GetEvent(int thread_logic_id, AFIThreadEvent*& thread_event);
+        virtual AFIThreadEvent* GetEvent(int thread_logic_id);
 
     private:
         void Lock();

@@ -20,7 +20,8 @@ namespace ark
 
     AFCLogicThreadManager::AFCLogicThreadManager() :
         main_check_time_interval_(0),
-        plugin_manager_(NULL)
+        plugin_manager_(NULL),
+        event_manager_(NULL)
     {
 #if ARK_PLATFORM == PLATFORM_WIN
         main_thread_mutex_ = new CRITICAL_SECTION();
@@ -69,10 +70,11 @@ namespace ark
         UnLock();
     }
 
-    void AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager)
+    void AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager, AFIEventThreadManager* event_manager)
     {
         main_check_time_interval_ = main_check_time_interval;
         plugin_manager_           = plugin_manager;
+        event_manager_            = event_manager;
 
         //create maintain thread
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -114,7 +116,8 @@ namespace ark
                                                thread_callback_error,
                                                thread_exit,
                                                arg,
-                                               plugin_manager_);
+                                               plugin_manager_,
+                                               event_manager_);
 
         if (true == blret)
         {

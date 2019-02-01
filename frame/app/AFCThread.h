@@ -55,7 +55,8 @@ namespace ark
                           ThreadErrorLogic thread_callback_error,
                           ThreadExit thread_exit,
                           void* arg,
-                          AFIPluginManager* plugin_manager);
+                          AFIPluginManager* plugin_manager,
+                          AFIEventThreadManager* event_manager);
 
         int KillThread();
 
@@ -83,6 +84,8 @@ namespace ark
 
         virtual AFIPluginManager* GetPluginManager();
 
+        virtual AFIThreadEvent* GetThreadEvent();
+
         AFDateTime GetCreatehreadTime();
 
         AFDateTime GetLogicBeginThreadTime();
@@ -103,8 +106,9 @@ namespace ark
         AFDateTime logic_begin_thread_time_;
         AFDateTime logic_end_thread_time_;
         ThreadState thread_state_;
-        ThreadErrorLogic thread_error_logic_;
         AFIPluginManager* plugin_manager_;
+        AFIEventThreadManager* event_manager_;
+        ThreadErrorLogic thread_error_logic_;
     };
 }
 

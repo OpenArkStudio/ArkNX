@@ -22,9 +22,9 @@ namespace ark
             return;
         }
 
-        AFIThreadEvent* thread_event_recv = NULL;
+        AFIThreadEvent* thread_event_recv = thread_event_manager.GetEvent(1);
 
-        if (true == thread_event_manager.GetEvent(1, (AFIThreadEvent* )thread_event_recv))
+        if (NULL != thread_event_recv)
         {
             if (thread_event_recv->GetEventID() != 1000)
             {

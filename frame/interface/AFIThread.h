@@ -23,6 +23,7 @@
 
 #include "base/AFPlatform.hpp"
 #include "interface/AFIPluginManager.h"
+#include "interface/AFIEventThreadManager.h"
 
 #if ARK_PLATFORM == PLATFORM_WIN
 #include <windows.h>
@@ -93,6 +94,8 @@ namespace ark
         virtual ThreadState GetThreadState() = 0;
 
         virtual AFIPluginManager* GetPluginManager() = 0;
+
+        virtual AFIThreadEvent* GetThreadEvent() = 0;
     };
 
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -109,7 +112,7 @@ namespace ark
 
     typedef void(*ThreadInit)(int, AFIPluginManager* plugin_manager);
 
-    typedef ThreadReturn(*ThreadCallbackLogic)(int&, void*);
+    typedef ThreadReturn(*ThreadCallbackLogic)(AFIThreadEvent*, int&, void*);
 
     typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int, void*);
 
