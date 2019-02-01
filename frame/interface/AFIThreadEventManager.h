@@ -26,11 +26,11 @@
 namespace ark
 {
     //main thread maintain interface
-    class AFIEventThreadManager
+    class AFIThreadEventManager
     {
     public:
-        AFIEventThreadManager() {};
-        virtual ~AFIEventThreadManager() {};
+        AFIThreadEventManager() {};
+        virtual ~AFIThreadEventManager() {};
 
         virtual bool AddEvent(int thread_logic_id, AFIThreadEvent* thread_event) = 0;
 

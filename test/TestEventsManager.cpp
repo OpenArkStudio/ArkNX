@@ -3,14 +3,14 @@
 namespace ark
 {
 
-    void EventManagerTimeout(int thread_id, AFIThreadEvent* thread_event)
+    void TestEventManagerTimeout(int thread_id, AFIThreadEvent* thread_event)
     {
         printf_s("[EventTimeout]thread_id=%d, event=%d.\n", thread_id, thread_event->GetEventID());
     }
 
     void UnitTestEventsManager(AFCThreadEventsManager& thread_event_manager)
     {
-        thread_event_manager.Init(100, EventManagerTimeout);
+        thread_event_manager.Init(100, TestEventManagerTimeout);
 
         AFCThreadEvent* thread_event = new AFCThreadEvent();
         thread_event->Set(1000, "freeeyes", NULL, 1000);

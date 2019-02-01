@@ -5,7 +5,7 @@
 
 namespace ark
 {
-    inline void EventManagerTimeout(int thread_id, AFCThreadEvent thread_event);
+    void TestEventManagerTimeout(int thread_id, AFIThreadEvent* thread_event);
 
     void UnitTestEventsManager(AFCThreadEventsManager& thread_event_manager);
 }

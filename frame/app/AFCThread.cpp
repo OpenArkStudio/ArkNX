@@ -20,11 +20,12 @@ namespace ark
         {
             thread_param->thread_->Lock();
 
-            int nError = 0;
-            thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_BEGIN);
+            int error_id = 0;
             thread_param->thread_->SaveLastRunTimeBegin();
             AFIThreadEvent* thread_event = thread_param->thread_->GetThreadEvent();
-            ThreadReturn thread_return = thread_param->thread_callback_logic_(thread_event, nError, thread_param->arg_);
+            ThreadReturn thread_return = thread_param->thread_callback_logic_(thread_param->thread_->GetThreadLogicID(),
+                                         thread_event,
+                                         thread_param->arg_);
             thread_param->thread_->SaveLastRunTimeEnd();
 
             //release
@@ -44,7 +45,7 @@ namespace ark
                 thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_ERROR);
                 ThreadError thread_error = thread_param->thread_error_logic_(thread_param->thread_->GetThreadLogicID(),
                                            ARK_THREAD_LOGIC_ERROR,
-                                           nError,
+                                           error_id,
                                            thread_param->arg_);
 
                 if (ARK_THREAD_ERROR_CLOSE == thread_error)
@@ -63,6 +64,8 @@ namespace ark
         thread_param->thread_exit_(thread_param->thread_->GetThreadLogicID(),
                                    thread_param->thread_->GetPluginManager());
 
+
+        thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_FINISH);
         return 0;
     };
 
@@ -78,9 +81,13 @@ namespace ark
 #if ARK_PLATFORM == PLATFORM_WIN
         thread_mutex_ = new CRITICAL_SECTION();
         thread_cond_ = new CONDITION_VARIABLE();
+        InitializeCriticalSection(thread_mutex_);
+        InitializeConditionVariable(thread_cond_);
 #else
         thread_mutex_ = new pthread_mutex_t();
         thread_cond_ = new pthread_cond_t();
+        pthread_mutex_init(thread_mutex_, NULL);
+        pthread_cond_init(thread_cond_, NULL);
 #endif
     }
 
@@ -106,7 +113,7 @@ namespace ark
                                  ThreadExit thread_exit,
                                  void* arg,
                                  AFIPluginManager* plugin_manager,
-                                 AFIEventThreadManager* event_manager)
+                                 AFIThreadEventManager* event_manager)
     {
         if (ARK_THREAD_STATE_NONE != thread_state_)
         {
@@ -236,12 +243,14 @@ namespace ark
     void AFCThread::SaveLastRunTimeBegin()
     {
         //save thread last run time begin
+        SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_BEGIN);
         logic_begin_thread_time_.update();
     }
 
     void AFCThread::SaveLastRunTimeEnd()
     {
         //save thread last run time End
+        SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
         logic_end_thread_time_.update();
     }
 
@@ -267,9 +276,10 @@ namespace ark
 
     void AFCThread::ThreadTimeoutCallBack()
     {
+        int error_id = 0;
         thread_error_logic_(thread_logic_id_,
                             ARK_THREAD_LOGIC_TIMEOUT,
-                            0,
+                            error_id,
                             NULL);
     }
 
