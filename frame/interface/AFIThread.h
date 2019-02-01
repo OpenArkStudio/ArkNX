@@ -57,6 +57,7 @@ namespace ark
         ARK_THREAD_STATE_INIT,
         ARK_THREAD_STATE_LOGIC_RUN_BEGIN,
         ARK_THREAD_STATE_LOGIC_RUN_END,
+        ARK_THREAD_STATE_LOGIC_PAUSE,
         ARK_THREAD_STATE_LOGIC_ERROR,
         ARK_THREAD_STATE_LOGIC_CLOSE,
         ARK_THREAD_STATE_LOGIC_FINISH
@@ -97,6 +98,8 @@ namespace ark
         virtual AFIPluginManager* GetPluginManager() = 0;
 
         virtual AFIThreadEvent* GetThreadEvent() = 0;
+
+        virtual void SetCond() = 0;
     };
 
 #if ARK_PLATFORM == PLATFORM_WIN
