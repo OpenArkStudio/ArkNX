@@ -70,7 +70,7 @@ namespace ark
         UnLock();
     }
 
-    void AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager, AFIEventThreadManager* event_manager)
+    void AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager, AFIThreadEventManager* event_manager)
     {
         main_check_time_interval_ = main_check_time_interval;
         plugin_manager_           = plugin_manager;
@@ -221,7 +221,7 @@ namespace ark
 
         Lock();
 
-        for (mapThreadList::iterator b = thread_list_.begin(); b != thread_list_.end(); ++b)
+        for (mapThreadList::iterator b = thread_list_.begin(); b != thread_list_.end();)
         {
             AFCThread* thread_info = (AFCThread*)b->second;
 
@@ -234,6 +234,16 @@ namespace ark
                     //thread timeout
                     thread_info->ThreadTimeoutCallBack();
                 }
+            }
+
+            if (ARK_THREAD_STATE_LOGIC_FINISH == thread_info->GetThreadState())
+            {
+                //thread is finish
+                b = thread_list_.erase(b);
+            }
+            else
+            {
+                ++b;
             }
         }
 

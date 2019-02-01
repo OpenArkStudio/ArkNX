@@ -23,7 +23,7 @@
 
 #include "base/AFPlatform.hpp"
 #include "interface/AFIPluginManager.h"
-#include "interface/AFIEventThreadManager.h"
+#include "interface/AFIThreadEventManager.h"
 
 #if ARK_PLATFORM == PLATFORM_WIN
 #include <windows.h>
@@ -58,7 +58,8 @@ namespace ark
         ARK_THREAD_STATE_LOGIC_RUN_BEGIN,
         ARK_THREAD_STATE_LOGIC_RUN_END,
         ARK_THREAD_STATE_LOGIC_ERROR,
-        ARK_THREAD_STATE_LOGIC_CLOSE
+        ARK_THREAD_STATE_LOGIC_CLOSE,
+        ARK_THREAD_STATE_LOGIC_FINISH
     };
 
     enum ThreadError
@@ -110,13 +111,13 @@ namespace ark
 #define HANDEL_ERROR_VALUE -1
 #endif
 
-    typedef void(*ThreadInit)(int, AFIPluginManager* plugin_manager);
+    typedef void(*ThreadInit)(int, AFIPluginManager*);
 
-    typedef ThreadReturn(*ThreadCallbackLogic)(AFIThreadEvent*, int&, void*);
+    typedef ThreadReturn(*ThreadCallbackLogic)(int, AFIThreadEvent*, void*);
 
-    typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int, void*);
+    typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int&, void*);
 
-    typedef void(*ThreadExit)(int, AFIPluginManager* plugin_manager);
+    typedef void(*ThreadExit)(int, AFIPluginManager*);
 
 }
 

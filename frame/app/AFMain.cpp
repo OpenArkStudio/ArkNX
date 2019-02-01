@@ -23,6 +23,8 @@
 #include "base/AFDateTime.hpp"
 #include "base/AFMisc.hpp"
 #include "AFCPluginManager.h"
+
+#include "../test/TestLogicThreadManager.h"
 #include "../test/TestEventsManager.h"
 
 using namespace ark;
@@ -269,8 +271,16 @@ int main(int argc, char* argv[])
 	*/
 
 	//test code
+	AFCLogicThreadManager logic_thread_manager;
 	AFCThreadEventsManager thread_event_manager;
+	AFCPluginManager plug_manager;
+
 	UnitTestEventsManager(thread_event_manager);
+
+	UnitTestLogicThreadManager(logic_thread_manager, 
+		(AFIPluginManager*)&plug_manager,
+		(AFIThreadEventManager* )&thread_event_manager);
+
 	getchar();
 
     return 0;

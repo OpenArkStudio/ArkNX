@@ -25,6 +25,9 @@
     <ClInclude Include="..\..\test\TestEventsManager.h">
       <Filter>test</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\test\TestLogicThreadManager.h">
+      <Filter>test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AFMain.cpp" />
@@ -47,6 +50,9 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\TestEventsManager.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\TestLogicThreadManager.cpp">
       <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>

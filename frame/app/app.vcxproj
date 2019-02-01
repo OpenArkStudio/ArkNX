@@ -101,6 +101,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\test\TestEventsManager.h" />
+    <ClInclude Include="..\..\test\TestLogicThreadManager.h" />
     <ClInclude Include="..\base\AFDateTime.hpp" />
     <ClInclude Include="AFCDynLib.h" />
     <ClInclude Include="AFCLogicThreadManager.h" />
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\TestEventsManager.cpp" />
+    <ClCompile Include="..\..\test\TestLogicThreadManager.cpp" />
     <ClCompile Include="AFCDynLib.cpp" />
     <ClCompile Include="AFCLogicThreadManager.cpp" />
     <ClCompile Include="AFCPluginManager.cpp" />
