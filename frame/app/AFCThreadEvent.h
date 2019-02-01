@@ -7,7 +7,7 @@ namespace ark
 {
 #define MAX_EVENT_PARAM_SIZE 200
 
-    class AFCThreadEvent
+    class AFCThreadEvent : public AFIThreadEvent
     {
     public:
         AFCThreadEvent();
