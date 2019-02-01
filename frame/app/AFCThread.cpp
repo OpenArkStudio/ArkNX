@@ -200,6 +200,8 @@ namespace ark
 
     bool AFCThread::Pause()
     {
+        SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
+
 #if ARK_PLATFORM == PLATFORM_WIN
         SleepConditionVariableCS(reinterpret_cast<PCONDITION_VARIABLE>(thread_cond_),
                                  reinterpret_cast<PCRITICAL_SECTION>(thread_mutex_),
@@ -218,7 +220,6 @@ namespace ark
 #else
         pthread_mutex_unlock(thread_mutex_);
 #endif
-
         return true;
     }
 
