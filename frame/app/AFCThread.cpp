@@ -18,6 +18,11 @@ namespace ark
 
         while (ARK_THREAD_STATE_LOGIC_CLOSE != thread_param->thread_->GetThreadState())
         {
+            if (ARK_THREAD_STATE_LOGIC_PAUSE == thread_param->thread_->GetThreadState())
+            {
+                thread_param->thread_->SetCond();
+            }
+
             thread_param->thread_->Lock();
 
             int error_id = 0;
@@ -26,6 +31,7 @@ namespace ark
             ThreadReturn thread_return = thread_param->thread_callback_logic_(thread_param->thread_->GetThreadLogicID(),
                                          thread_event,
                                          thread_param->arg_);
+
             thread_param->thread_->SaveLastRunTimeEnd();
 
             //release
@@ -200,16 +206,7 @@ namespace ark
 
     bool AFCThread::Pause()
     {
-        SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
-
-#if ARK_PLATFORM == PLATFORM_WIN
-        SleepConditionVariableCS(reinterpret_cast<PCONDITION_VARIABLE>(thread_cond_),
-                                 reinterpret_cast<PCRITICAL_SECTION>(thread_mutex_),
-                                 INFINITE);
-#else
-        pthread_cond_wait(thread_cond_,
-                          thread_mutex_);
-#endif
+        SetThreadState(ARK_THREAD_STATE_LOGIC_PAUSE);
         return true;
     }
 
@@ -251,7 +248,11 @@ namespace ark
     void AFCThread::SaveLastRunTimeEnd()
     {
         //save thread last run time End
-        SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
+        if (ARK_THREAD_STATE_LOGIC_PAUSE != GetThreadState())
+        {
+            SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
+        }
+
         logic_end_thread_time_.update();
     }
 
@@ -297,6 +298,18 @@ namespace ark
     ark::AFIThreadEvent* AFCThread::GetThreadEvent()
     {
         return event_manager_->GetEvent(thread_logic_id_);
+    }
+
+    void AFCThread::SetCond()
+    {
+#if ARK_PLATFORM == PLATFORM_WIN
+        SleepConditionVariableCS(reinterpret_cast<PCONDITION_VARIABLE>(thread_cond_),
+                                 reinterpret_cast<PCRITICAL_SECTION>(thread_mutex_),
+                                 INFINITE);
+#else
+        pthread_cond_wait(thread_cond_,
+                          thread_mutex_);
+#endif
     }
 
     int AFCThread::GetThreadLogicID()

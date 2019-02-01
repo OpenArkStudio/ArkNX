@@ -86,6 +86,8 @@ namespace ark
 
         virtual AFIThreadEvent* GetThreadEvent();
 
+        virtual void SetCond();
+
         AFDateTime GetCreatehreadTime();
 
         AFDateTime GetLogicBeginThreadTime();
