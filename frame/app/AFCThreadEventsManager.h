@@ -33,7 +33,7 @@ using namespace std;
 
 namespace ark
 {
-    typedef void(*EventTimeout)(int, AFCThreadEvent);
+    typedef void(*EventTimeout)(int, AFIThreadEvent*);
 
     class AFCThreadEventsManager : public AFIMaintainThreadManager, public AFIEventThreadManager
     {
@@ -49,9 +49,9 @@ namespace ark
 
         virtual int64_t GetMainThreadCheckInterval();
 
-        virtual bool AddEvent(int thread_logic_id, AFCThreadEvent& thread_event);
+        virtual bool AddEvent(int thread_logic_id, AFIThreadEvent* thread_event);
 
-        virtual bool GetEvent(int thread_logic_id, AFCThreadEvent& thread_event);
+        virtual bool GetEvent(int thread_logic_id, AFIThreadEvent*& thread_event);
 
     private:
         void Lock();
@@ -59,7 +59,7 @@ namespace ark
         void UnLock();
 
     private:
-        typedef deque<AFCThreadEvent> queEventList;
+        typedef deque<AFIThreadEvent*> queEventList;
         typedef map<int, queEventList*> mapThreadEvents;
 
     private:

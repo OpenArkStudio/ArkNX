@@ -84,7 +84,7 @@ namespace ark
 
             for (queEventList::iterator vec_b = event_list->begin(); vec_b != event_list->end();)
             {
-                if ((*vec_b).IsTimeout(date_now) == true)
+                if ((*vec_b)->IsTimeout(date_now) == true)
                 {
                     //need delete
                     event_timeout_func_(thread_logic_id, (*vec_b));
@@ -105,7 +105,7 @@ namespace ark
         return main_check_time_interval_;
     }
 
-    bool AFCThreadEventsManager::AddEvent(int thread_logic_id, AFCThreadEvent& thread_event)
+    bool AFCThreadEventsManager::AddEvent(int thread_logic_id, AFIThreadEvent* thread_event)
     {
         Lock();
 
@@ -138,7 +138,7 @@ namespace ark
         return true;
     }
 
-    bool AFCThreadEventsManager::GetEvent(int thread_logic_id, AFCThreadEvent& thread_event)
+    bool AFCThreadEventsManager::GetEvent(int thread_logic_id, AFIThreadEvent*& thread_event)
     {
         Lock();
 
