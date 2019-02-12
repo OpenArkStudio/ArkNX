@@ -19,7 +19,8 @@ namespace ark
 
     AFCThreadEventsManager::AFCThreadEventsManager() : max_thread_events_count_(100),
         main_check_time_interval_(1000),
-        events_thread_mutex_(NULL)
+        events_thread_mutex_(NULL),
+        thread_wake_up_(NULL)
     {
 #if ARK_PLATFORM == PLATFORM_WIN
         events_thread_mutex_ = new CRITICAL_SECTION();
@@ -57,10 +58,11 @@ namespace ark
         UnLock();
     }
 
-    void AFCThreadEventsManager::Init(int max_thread_events_count, EventTimeout event_timeout_func)
+    void AFCThreadEventsManager::Init(int max_thread_events_count, EventTimeout event_timeout_func, AFIThreadWakeUp* thread_wake_up)
     {
         max_thread_events_count_ = max_thread_events_count;
         event_timeout_func_      = event_timeout_func;
+        thread_wake_up_          = thread_wake_up;
 
         //create maintain thread
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -131,6 +133,11 @@ namespace ark
             else
             {
                 event_list->push_back(thread_event);
+
+                if (NULL != thread_wake_up_)
+                {
+                    thread_wake_up_->Wakeup(thread_logic_id);
+                }
             }
         }
 

@@ -255,6 +255,11 @@ namespace ark
         return main_check_time_interval_;
     }
 
+    bool AFCLogicThreadManager::Wakeup(int thread_logic_id)
+    {
+        return Resume(thread_logic_id);
+    }
+
     void AFCLogicThreadManager::Lock()
     {
 #if ARK_PLATFORM == PLATFORM_WIN

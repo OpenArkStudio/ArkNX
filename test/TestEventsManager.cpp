@@ -10,7 +10,7 @@ namespace ark
 
     void UnitTestEventsManager(AFCThreadEventsManager& thread_event_manager)
     {
-        thread_event_manager.Init(100, TestEventManagerTimeout);
+        thread_event_manager.Init(100, TestEventManagerTimeout, NULL);
 
         AFCThreadEvent* thread_event = new AFCThreadEvent();
         thread_event->Set(1000, "freeeyes", NULL, 1000);

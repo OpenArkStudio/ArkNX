@@ -12,7 +12,7 @@ namespace ark
     {
         AFILogicThreadReturn logic_thread_return;
 
-        logic_thread_return.pause_time_ = 500;
+        logic_thread_return.pause_time_ = 2000;
 
         if (NULL != thread_event)
         {

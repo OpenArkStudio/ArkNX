@@ -223,11 +223,11 @@ namespace ark
 
     bool AFCThread::Resume()
     {
-#if ARK_PLATFORM == PLATFORM_WIN
-        LeaveCriticalSection(thread_mutex_);
-#else
-        pthread_mutex_unlock(thread_mutex_);
-#endif
+        if(ARK_THREAD_STATE_LOGIC_PAUSE == GetThreadState())
+        {
+            UnLock();
+        }
+
         return true;
     }
 
