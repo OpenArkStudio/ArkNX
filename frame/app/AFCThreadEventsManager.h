@@ -25,6 +25,7 @@
 #include "interface/AFIMaintainThreadManager.h"
 #include "interface/AFIThread.h"
 #include "interface/AFIThreadEventManager.h"
+#include "interface/AFIThreadWakeUp.h"
 #include "AFCThreadEvent.h"
 #include <map>
 #include <deque>
@@ -43,7 +44,7 @@ namespace ark
 
         void Close();
 
-        void Init(int max_thread_events_count, EventTimeout event_timeout_func);
+        void Init(int max_thread_events_count, EventTimeout event_timeout_func, AFIThreadWakeUp* thread_wake_up);
 
         virtual void CheckThreadList();
 
@@ -63,11 +64,12 @@ namespace ark
         typedef map<int, queEventList*> mapThreadEvents;
 
     private:
-        int             max_thread_events_count_;
-        int64_t         main_check_time_interval_;
-        mapThreadEvents map_thread_events_;
-        ThreadMutex*    events_thread_mutex_;
-        EventTimeout    event_timeout_func_;
+        int              max_thread_events_count_;
+        int64_t          main_check_time_interval_;
+        mapThreadEvents  map_thread_events_;
+        ThreadMutex*     events_thread_mutex_;
+        AFIThreadWakeUp* thread_wake_up_;
+        EventTimeout     event_timeout_func_;
     };
 }
 

@@ -25,6 +25,7 @@
 #include "AFCThread.h"
 #include "interface/AFIMaintainThreadManager.h"
 #include "interface/AFILogicThreadManager.h"
+#include "interface/AFIThreadWakeUp.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ using namespace std;
 
 namespace ark
 {
-    class AFCLogicThreadManager : public AFIMaintainThreadManager, public AFILogicThreadManager
+    class AFCLogicThreadManager : public AFIMaintainThreadManager, public AFILogicThreadManager, public AFIThreadWakeUp
     {
     public:
         typedef map<int, AFCThread*> mapThreadList;
@@ -62,6 +63,8 @@ namespace ark
         virtual void CheckThreadList();
 
         virtual int64_t GetMainThreadCheckInterval();
+
+        virtual bool Wakeup(int thread_logic_id);
 
     private:
         void Lock();
