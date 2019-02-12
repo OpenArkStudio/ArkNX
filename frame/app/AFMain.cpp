@@ -275,11 +275,11 @@ int main(int argc, char* argv[])
 	AFCThreadEventsManager thread_event_manager;
 	AFCPluginManager plug_manager;
 
-	UnitTestEventsManager(thread_event_manager);
-
 	UnitTestLogicThreadManager(logic_thread_manager, 
 		(AFIPluginManager*)&plug_manager,
 		(AFIThreadEventManager* )&thread_event_manager);
+
+	UnitTestEventsManager(thread_event_manager, (AFIThreadWakeUp* )&logic_thread_manager);
 
 	getchar();
 

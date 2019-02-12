@@ -8,9 +8,9 @@ namespace ark
         printf_s("[EventTimeout]thread_id=%d, event=%d.\n", thread_id, thread_event->GetEventID());
     }
 
-    void UnitTestEventsManager(AFCThreadEventsManager& thread_event_manager)
+    void UnitTestEventsManager(AFCThreadEventsManager& thread_event_manager, AFIThreadWakeUp* thread_wake_up)
     {
-        thread_event_manager.Init(100, TestEventManagerTimeout, NULL);
+        thread_event_manager.Init(100, TestEventManagerTimeout, thread_wake_up);
 
         AFCThreadEvent* thread_event = new AFCThreadEvent();
         thread_event->Set(1000, "freeeyes", NULL, 1000);
