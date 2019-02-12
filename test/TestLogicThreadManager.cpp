@@ -16,10 +16,13 @@ namespace ark
 
         if (NULL != thread_event)
         {
-            printf_s("[ThreadCallbackLogic]thread_event_id=%d.\n", thread_event->GetEventID());
+            printf_s("[ThreadCallbackLogic]thread_event_id=%d, Param=%s.\n", thread_event->GetEventID(), thread_event->GetParam());
+        }
+        else
+        {
+            printf_s("[ThreadCallbackLogic]thread_event=%d.\n", logic_thread_id);
         }
 
-        printf_s("[ThreadCallbackLogic]thread_event=%d.\n", logic_thread_id);
         return logic_thread_return;
     }
 

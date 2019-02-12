@@ -7,6 +7,6 @@ namespace ark
 {
     void TestEventManagerTimeout(int thread_id, AFIThreadEvent* thread_event);
 
-    void UnitTestEventsManager(AFCThreadEventsManager& thread_event_manager);
+    void UnitTestEventsManager(AFCThreadEventsManager& thread_event_manager, AFIThreadWakeUp* thread_wake_up);
 }
 #endif
