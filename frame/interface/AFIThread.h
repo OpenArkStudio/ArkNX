@@ -48,6 +48,7 @@ namespace ark
         ARK_THREAD_RETURN_ONCE = 0,
         ARK_THREAD_RETURN_CONTINUE,
         ARK_THREAD_RETURN_ERROR,
+        ARK_THREAD_RETURN_PAUSE,
     };
 
     //Thread state
@@ -75,6 +76,18 @@ namespace ark
         ARK_THREAD_LOGIC_TIMEOUT
     };
 
+    class AFILogicThreadReturn
+    {
+    public:
+        AFILogicThreadReturn() : thread_return_(ARK_THREAD_RETURN_PAUSE), pause_time_(0)
+        {
+
+        }
+
+        ThreadReturn thread_return_;
+        int          pause_time_;
+    };
+
     class AFIThread
     {
     public:
@@ -99,7 +112,7 @@ namespace ark
 
         virtual AFIThreadEvent* GetThreadEvent() = 0;
 
-        virtual void SetCond() = 0;
+        virtual void SetCond(int interval_timeout) = 0;
     };
 
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -116,7 +129,7 @@ namespace ark
 
     typedef void(*ThreadInit)(int, AFIPluginManager*);
 
-    typedef ThreadReturn(*ThreadCallbackLogic)(int, AFIThreadEvent*, void*);
+    typedef AFILogicThreadReturn(*ThreadCallbackLogic)(int, AFIThreadEvent*, void*);
 
     typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int&, void*);
 
