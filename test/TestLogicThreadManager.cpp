@@ -8,15 +8,19 @@ namespace ark
         printf_s("[ThreadInit]logic_thread_id=%d.\n", logic_thread_id);
     }
 
-    ThreadReturn TestThreadCallbackLogic(int logic_thread_id, AFIThreadEvent* thread_event, void* context)
+    AFILogicThreadReturn TestThreadCallbackLogic(int logic_thread_id, AFIThreadEvent* thread_event, void* context)
     {
+        AFILogicThreadReturn logic_thread_return;
+
+        logic_thread_return.pause_time_ = 500;
+
         if (NULL != thread_event)
         {
             printf_s("[ThreadCallbackLogic]thread_event_id=%d.\n", thread_event->GetEventID());
         }
 
         printf_s("[ThreadCallbackLogic]thread_event=%d.\n", logic_thread_id);
-        return ARK_THREAD_RETURN_ONCE;
+        return logic_thread_return;
     }
 
     ThreadError TestThreadErrorLogic(int logic_thread_id, ThreadLogicErrorType error_type, int& return_error, void* context)

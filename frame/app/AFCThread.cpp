@@ -10,6 +10,7 @@ namespace ark
     void* ThreadCallbackRun(void* arg)
 #endif
     {
+        int logic_thread_pause_timeout = 0;
         AFCThreadParam* thread_param = (AFCThreadParam*)arg;
 
         //Init thread func
@@ -20,7 +21,7 @@ namespace ark
         {
             if (ARK_THREAD_STATE_LOGIC_PAUSE == thread_param->thread_->GetThreadState())
             {
-                thread_param->thread_->SetCond();
+                thread_param->thread_->SetCond(logic_thread_pause_timeout);
             }
 
             thread_param->thread_->Lock();
@@ -28,9 +29,9 @@ namespace ark
             int error_id = 0;
             thread_param->thread_->SaveLastRunTimeBegin();
             AFIThreadEvent* thread_event = thread_param->thread_->GetThreadEvent();
-            ThreadReturn thread_return = thread_param->thread_callback_logic_(thread_param->thread_->GetThreadLogicID(),
-                                         thread_event,
-                                         thread_param->arg_);
+            AFILogicThreadReturn thread_return = thread_param->thread_callback_logic_(thread_param->thread_->GetThreadLogicID(),
+                                                 thread_event,
+                                                 thread_param->arg_);
 
             thread_param->thread_->SaveLastRunTimeEnd();
 
@@ -40,12 +41,12 @@ namespace ark
                 delete thread_event;
             }
 
-            if (ARK_THREAD_RETURN_ONCE == thread_return)
+            if (ARK_THREAD_RETURN_ONCE == thread_return.thread_return_)
             {
                 //thread logic just run once
                 break;
             }
-            else if (ARK_THREAD_RETURN_ERROR == thread_return)
+            else if (ARK_THREAD_RETURN_ERROR == thread_return.thread_return_)
             {
                 //call thread logic error function
                 thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_ERROR);
@@ -61,7 +62,17 @@ namespace ark
             }
             else
             {
-                thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
+                //need pause
+                if (ARK_THREAD_RETURN_PAUSE == thread_return.thread_return_)
+                {
+                    thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_PAUSE);
+                    logic_thread_pause_timeout = thread_return.pause_time_;
+                }
+                else
+                {
+                    thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_RUN_END);
+                }
+
                 thread_param->thread_->UnLock();
             }
         }
@@ -300,16 +311,47 @@ namespace ark
         return event_manager_->GetEvent(thread_logic_id_);
     }
 
-    void AFCThread::SetCond()
+    void AFCThread::SetCond(int interval_timeout)
     {
+        if (0 == interval_timeout)
+        {
 #if ARK_PLATFORM == PLATFORM_WIN
-        SleepConditionVariableCS(reinterpret_cast<PCONDITION_VARIABLE>(thread_cond_),
-                                 reinterpret_cast<PCRITICAL_SECTION>(thread_mutex_),
-                                 INFINITE);
+            SleepConditionVariableCS(reinterpret_cast<PCONDITION_VARIABLE>(thread_cond_),
+                                     reinterpret_cast<PCRITICAL_SECTION>(thread_mutex_),
+                                     INFINITE);
+
 #else
-        pthread_cond_wait(thread_cond_,
-                          thread_mutex_);
+            pthread_cond_wait(thread_cond_,
+                              thread_mutex_);
 #endif
+        }
+        else
+        {
+#ifdef WIN32
+            SleepConditionVariableCS(reinterpret_cast<PCONDITION_VARIABLE>(thread_cond_),
+                                     reinterpret_cast<PCRITICAL_SECTION>(thread_mutex_),
+                                     interval_timeout);
+#else
+            struct timespec outtime;
+
+            struct timeval now;
+            struct timeval Interval;
+            struct timeval abstime;
+
+            Interval.tv_sec = (int)(interval_timeout / 1000);
+            Interval.tv_usec = (interval_timeout % 1000) * 1000;
+
+            gettimeofday(&now, NULL);
+            timeradd(&now, &Interval, &abstime);
+
+            outtime.tv_sec = abstime.tv_sec;
+            outtime.tv_nsec = abstime.tv_usec * 1000;  //单位是纳秒
+
+            pthread_cond_timedwait(thread_cond_,
+                                   thread_mutex_,
+                                   &outtime);
+#endif
+        }
     }
 
     int AFCThread::GetThreadLogicID()

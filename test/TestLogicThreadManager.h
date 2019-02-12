@@ -7,7 +7,7 @@ namespace ark
 {
     static void TestThreadInit(int logic_thread_id, AFIPluginManager* plugin_manager);
 
-    static ThreadReturn TestThreadCallbackLogic(int logic_thread_id, AFIThreadEvent* thread_event, void* context);
+    static AFILogicThreadReturn TestThreadCallbackLogic(int logic_thread_id, AFIThreadEvent* thread_event, void* context);
 
     static ThreadError TestThreadErrorLogic(int logic_thread_id, ThreadLogicErrorType error_type, int& return_error, void* context);
 

@@ -86,7 +86,7 @@ namespace ark
 
         virtual AFIThreadEvent* GetThreadEvent();
 
-        virtual void SetCond();
+        virtual void SetCond(int interval_timeout = 0);
 
         AFDateTime GetCreatehreadTime();
 
