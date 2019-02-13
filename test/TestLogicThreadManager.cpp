@@ -8,7 +8,7 @@ namespace ark
         printf_s("[ThreadInit]logic_thread_id=%d.\n", logic_thread_id);
     }
 
-    AFILogicThreadReturn TestThreadCallbackLogic(int logic_thread_id, AFIThreadEvent* thread_event, void* context)
+    AFILogicThreadReturn TestThreadCallbackLogic(int logic_thread_id, AFIThreadEvent* thread_event, AFIManager* manager, void* context)
     {
         AFILogicThreadReturn logic_thread_return;
 
@@ -37,7 +37,7 @@ namespace ark
         printf_s("[ThreadExit]thread_event=%d.\n", logic_thread_id);
     }
 
-    void UnitTestLogicThreadManager(AFCLogicThreadManager& logic_thread_manager, AFIPluginManager* plugin_manager, AFIThreadEventManager* thread_event_manager)
+    void UnitTestLogicThreadManager(AFCLogicThreadManager& logic_thread_manager, AFIPluginManager* plugin_manager, AFIThreadEventsManager* thread_event_manager)
     {
         logic_thread_manager.Init(1000, plugin_manager, thread_event_manager);
 

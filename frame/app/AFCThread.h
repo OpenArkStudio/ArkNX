@@ -56,7 +56,8 @@ namespace ark
                           ThreadExit thread_exit,
                           void* arg,
                           AFIPluginManager* plugin_manager,
-                          AFIThreadEventManager* event_manager);
+                          AFIThreadEventsManager* event_manager,
+                          AFILogicThreadManager* logic_manager);
 
         int KillThread();
 
@@ -82,9 +83,7 @@ namespace ark
 
         virtual ThreadState GetThreadState();
 
-        virtual AFIPluginManager* GetPluginManager();
-
-        virtual AFIThreadEvent* GetThreadEvent();
+        virtual AFIManager* GetManager();
 
         virtual void SetCond(int interval_timeout = 0);
 
@@ -108,8 +107,7 @@ namespace ark
         AFDateTime logic_begin_thread_time_;
         AFDateTime logic_end_thread_time_;
         ThreadState thread_state_;
-        AFIPluginManager* plugin_manager_;
-        AFIThreadEventManager* event_manager_;
+        AFIManager manager_;
         ThreadErrorLogic thread_error_logic_;
     };
 }

@@ -24,7 +24,7 @@
 #include "base/AFMacros.hpp"
 #include "interface/AFIMaintainThreadManager.h"
 #include "interface/AFIThread.h"
-#include "interface/AFIThreadEventManager.h"
+#include "interface/AFIThreadEventsManager.h"
 #include "interface/AFIThreadWakeUp.h"
 #include "AFCThreadEvent.h"
 #include <map>
@@ -36,7 +36,7 @@ namespace ark
 {
     typedef void(*EventTimeout)(int, AFIThreadEvent*);
 
-    class AFCThreadEventsManager : public AFIMaintainThreadManager, public AFIThreadEventManager
+    class AFCThreadEventsManager : public AFIMaintainThreadManager, public AFIThreadEventsManager
     {
     public:
         AFCThreadEventsManager();

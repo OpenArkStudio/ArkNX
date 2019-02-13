@@ -15,7 +15,7 @@ namespace ark
 
         //Init thread func
         thread_param->thread_init_(thread_param->thread_->GetThreadLogicID(),
-                                   thread_param->thread_->GetPluginManager());
+                                   thread_param->thread_->GetManager()->GetPlugInManager());
 
         while (ARK_THREAD_STATE_LOGIC_CLOSE != thread_param->thread_->GetThreadState())
         {
@@ -28,9 +28,10 @@ namespace ark
 
             int error_id = 0;
             thread_param->thread_->SaveLastRunTimeBegin();
-            AFIThreadEvent* thread_event = thread_param->thread_->GetThreadEvent();
+            AFIThreadEvent* thread_event = thread_param->thread_->GetManager()->GetThreadEventManager()->GetEvent(thread_param->thread_->GetThreadLogicID());
             AFILogicThreadReturn thread_return = thread_param->thread_callback_logic_(thread_param->thread_->GetThreadLogicID(),
                                                  thread_event,
+                                                 thread_param->thread_->GetManager(),
                                                  thread_param->arg_);
 
             thread_param->thread_->SaveLastRunTimeEnd();
@@ -79,7 +80,7 @@ namespace ark
 
         thread_param->thread_->UnLock();
         thread_param->thread_exit_(thread_param->thread_->GetThreadLogicID(),
-                                   thread_param->thread_->GetPluginManager());
+                                   thread_param->thread_->GetManager()->GetPlugInManager());
 
 
         thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_FINISH);
@@ -91,9 +92,7 @@ namespace ark
         thread_id_(HANDEL_ERROR_VALUE),
         thread_mutex_(NULL),
         thread_cond_(NULL),
-        thread_state_(ARK_THREAD_STATE_NONE),
-        plugin_manager_(NULL),
-        event_manager_(NULL)
+        thread_state_(ARK_THREAD_STATE_NONE)
     {
 #if ARK_PLATFORM == PLATFORM_WIN
         thread_mutex_ = new CRITICAL_SECTION();
@@ -130,7 +129,8 @@ namespace ark
                                  ThreadExit thread_exit,
                                  void* arg,
                                  AFIPluginManager* plugin_manager,
-                                 AFIThreadEventManager* event_manager)
+                                 AFIThreadEventsManager* event_manager,
+                                 AFILogicThreadManager* logic_manager)
     {
         if (ARK_THREAD_STATE_NONE != thread_state_)
         {
@@ -147,8 +147,8 @@ namespace ark
         thread_state_                        = ARK_THREAD_STATE_INIT;
         thread_logic_id_                     = thread_logic_id;
         thread_error_logic_                  = thread_callback_error;
-        plugin_manager_                      = plugin_manager;
-        event_manager_                       = event_manager;
+
+        manager_.Init(plugin_manager, event_manager, logic_manager);
 
 #if ARK_PLATFORM == PLATFORM_WIN
         unsigned int thread_id = 0;
@@ -301,14 +301,9 @@ namespace ark
         return thread_state_;
     }
 
-    AFIPluginManager* AFCThread::GetPluginManager()
+    AFIManager* AFCThread::GetManager()
     {
-        return plugin_manager_;
-    }
-
-    ark::AFIThreadEvent* AFCThread::GetThreadEvent()
-    {
-        return event_manager_->GetEvent(thread_logic_id_);
+        return &manager_;
     }
 
     void AFCThread::SetCond(int interval_timeout)

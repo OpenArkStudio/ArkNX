@@ -18,7 +18,7 @@
 *
 */
 
-#ifndef _AFITLOGICHREADMANAGER_H
+#ifndef _AFILOGICTHREADMANAGER_H
 #define _AFILOGICTHREADMANAGER_H
 
 #include "interface/AFIThread.h"
