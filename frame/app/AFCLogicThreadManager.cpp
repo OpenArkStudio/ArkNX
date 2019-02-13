@@ -70,7 +70,7 @@ namespace ark
         UnLock();
     }
 
-    void AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager, AFIThreadEventManager* event_manager)
+    void AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager, AFIThreadEventsManager* event_manager)
     {
         main_check_time_interval_ = main_check_time_interval;
         plugin_manager_           = plugin_manager;
@@ -117,7 +117,8 @@ namespace ark
                                                thread_exit,
                                                arg,
                                                plugin_manager_,
-                                               event_manager_);
+                                               event_manager_,
+                                               this);
 
         if (true == blret)
         {

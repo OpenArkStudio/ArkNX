@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
 
 	UnitTestLogicThreadManager(logic_thread_manager, 
 		(AFIPluginManager*)&plug_manager,
-		(AFIThreadEventManager* )&thread_event_manager);
+		(AFIThreadEventsManager* )&thread_event_manager);
 
 	UnitTestEventsManager(thread_event_manager, (AFIThreadWakeUp* )&logic_thread_manager);
 

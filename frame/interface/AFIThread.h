@@ -23,7 +23,7 @@
 
 #include "base/AFPlatform.hpp"
 #include "interface/AFIPluginManager.h"
-#include "interface/AFIThreadEventManager.h"
+#include "interface/AFIThreadEventsManager.h"
 
 #if ARK_PLATFORM == PLATFORM_WIN
 #include <windows.h>
@@ -41,6 +41,7 @@
 
 namespace ark
 {
+    class AFILogicThreadManager;
 
     //Thread return
     enum ThreadReturn
@@ -88,6 +89,45 @@ namespace ark
         int          pause_time_;
     };
 
+    //manager point
+    class AFIManager
+    {
+    public:
+        AFIManager() : plugin_namager_(NULL), thread_event_manager_(NULL), logic_thread_manager_(NULL)
+        {
+        };
+
+        ~AFIManager() {};
+
+        void Init(AFIPluginManager* plugin_namager, AFIThreadEventsManager* thread_event_manager, AFILogicThreadManager* logic_thread_manager)
+        {
+            plugin_namager_       = plugin_namager;
+            thread_event_manager_ = thread_event_manager;
+            logic_thread_manager_ = logic_thread_manager;
+        };
+
+        AFIPluginManager* GetPlugInManager()
+        {
+            return plugin_namager_;
+        }
+
+        AFIThreadEventsManager* GetThreadEventManager()
+        {
+            return thread_event_manager_;
+        }
+
+        AFILogicThreadManager* GetLogicThreadManager()
+        {
+            return logic_thread_manager_;
+        }
+
+    private:
+        AFIPluginManager*      plugin_namager_;
+        AFIThreadEventsManager* thread_event_manager_;
+        AFILogicThreadManager* logic_thread_manager_;
+    };
+
+    //logc thread
     class AFIThread
     {
     public:
@@ -108,9 +148,7 @@ namespace ark
 
         virtual ThreadState GetThreadState() = 0;
 
-        virtual AFIPluginManager* GetPluginManager() = 0;
-
-        virtual AFIThreadEvent* GetThreadEvent() = 0;
+        virtual AFIManager* GetManager() = 0;
 
         virtual void SetCond(int interval_timeout) = 0;
     };
@@ -129,7 +167,7 @@ namespace ark
 
     typedef void(*ThreadInit)(int, AFIPluginManager*);
 
-    typedef AFILogicThreadReturn(*ThreadCallbackLogic)(int, AFIThreadEvent*, void*);
+    typedef AFILogicThreadReturn(*ThreadCallbackLogic)(int, AFIThreadEvent*, AFIManager*, void*);
 
     typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int&, void*);
 
