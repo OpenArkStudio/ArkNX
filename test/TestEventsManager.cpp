@@ -12,7 +12,7 @@ namespace ark
     {
         thread_event_manager.Init(100, TestEventManagerTimeout, thread_wake_up);
 
-        AFCThreadEvent* thread_event = new AFCThreadEvent();
+        AFCThreadEvent* thread_event = new AFCThreadEvent(0, 1);
         thread_event->Set(1000, "freeeyes", NULL, 1000);
 
         if (false == thread_event_manager.AddEvent(1, (AFIThreadEvent* )thread_event))

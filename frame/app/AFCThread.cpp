@@ -137,16 +137,16 @@ namespace ark
             return false;
         }
 
-        thread_param_.thread_                = (AFIThread*)this;
-        thread_param_.arg_                   = arg;
+        thread_param_.thread_ = (AFIThread*)this;
+        thread_param_.arg_ = arg;
         thread_param_.thread_callback_logic_ = thread_callback_logic;
-        thread_param_.thread_error_logic_    = thread_callback_error;
-        thread_param_.thread_exit_           = thread_exit;
-        thread_param_.thread_init_           = thread_init;
+        thread_param_.thread_error_logic_ = thread_callback_error;
+        thread_param_.thread_exit_ = thread_exit;
+        thread_param_.thread_init_ = thread_init;
 
-        thread_state_                        = ARK_THREAD_STATE_INIT;
-        thread_logic_id_                     = thread_logic_id;
-        thread_error_logic_                  = thread_callback_error;
+        thread_state_ = ARK_THREAD_STATE_INIT;
+        thread_logic_id_ = thread_logic_id;
+        thread_error_logic_ = thread_callback_error;
 
         manager_.Init(plugin_manager, event_manager, logic_manager);
 
@@ -223,7 +223,7 @@ namespace ark
 
     bool AFCThread::Resume()
     {
-        if(ARK_THREAD_STATE_LOGIC_PAUSE == GetThreadState())
+        if (ARK_THREAD_STATE_LOGIC_PAUSE == GetThreadState())
         {
             UnLock();
         }
