@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This source file is part of ARK
 * For the latest info, see https://github.com/QuadHex
 *
@@ -83,9 +83,6 @@ ARK_EXPORT void DllExitPlugin(AFIPluginManager* pPluginManager)     \
         virtual void AddModule(const std::string& strModuleName, AFIModule* pModule) = 0;
         virtual void RemoveModule(const std::string& strModuleName) = 0;
         virtual AFIModule* FindModule(const std::string& strModuleName) = 0;
-
-        virtual int BusID() const = 0;
-        virtual void SetBusID(const int app_id) = 0;
 
         virtual const std::string& AppName() const = 0;
         virtual void SetAppName(const std::string& app_name) = 0;

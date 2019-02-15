@@ -235,7 +235,7 @@ void MainLoop()
 
 int main(int argc, char* argv[])
 {
-	/*
+/*
     if (!ParseArgs(argc, argv))
     {
         CONSOLE_INFO_LOG << "Application parameter is invalid, please check it..." << std::endl;
@@ -244,7 +244,13 @@ int main(int argc, char* argv[])
 
     PrintLogo();
 
-    ARK_ASSERT_RET_VAL(AFCPluginManager::get()->Init(), -1);
+    AFIPluginManager* thread_event_manager = ARK_NEW AFCPluginManager();
+    AFILogicThreadManager* logic_thread_manager = ARK_NEW AFCLogicThreadManager();
+    AFIThreadEventsManager* thread_event_manager = ARK_NEW AFCThreadEventsManager();
+    logic_thread_manager.Init(1, AFCPluginManager::get(), &thread_event_manager);
+    AFCPluginManager::get()->Start(&logic_thread_manager);
+
+    ARK_ASSERT_RET_VAL(, -1);
     ARK_ASSERT_RET_VAL(AFCPluginManager::get()->PostInit(), -1);
     ARK_ASSERT_RET_VAL(AFCPluginManager::get()->CheckConfig(), -1);
     ARK_ASSERT_RET_VAL(AFCPluginManager::get()->PreUpdate(), -1);
@@ -268,8 +274,7 @@ int main(int argc, char* argv[])
     AFCPluginManager::get()->Shut();
 
     g_cmd_thread.join();
-	*/
-
+*/
 	//test code
 	AFCLogicThreadManager logic_thread_manager;
 	AFCThreadEventsManager thread_event_manager;
