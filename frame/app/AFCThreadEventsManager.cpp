@@ -132,7 +132,16 @@ namespace ark
             }
             else
             {
-                event_list->push_back(thread_event);
+                //priority
+                if (thread_event->GetPriority() == ARK_EVENT_PRIORITY_COSTOM)
+                {
+                    event_list->push_back(thread_event);
+                }
+                else
+                {
+                    event_list->push_front(thread_event);
+                }
+
 
                 if (NULL != thread_wake_up_)
                 {

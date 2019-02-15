@@ -10,11 +10,15 @@ namespace ark
     class AFCThreadEvent : public AFIThreadEvent
     {
     public:
-        AFCThreadEvent();
+        AFCThreadEvent(int from_thread_id, int to_thread_id);
 
         virtual ~AFCThreadEvent();
 
-        virtual void Set(int32_t event_id, const char* event_param, void* event_context, int32_t event_timeout = 0);
+        virtual void Set(int32_t event_id,
+                         const char* event_param,
+                         void* event_context,
+                         int32_t event_timeout = 0,
+                         EventPriority event_priority = ARK_EVENT_PRIORITY_COSTOM);
 
         virtual int32_t GetEventID();
 
@@ -24,12 +28,21 @@ namespace ark
 
         virtual bool IsTimeout(AFDateTime date_now);
 
+        virtual EventPriority GetPriority();
+
+        virtual int GetFromThreadID();
+
+        virtual int GetToThreadID();
+
     private:
-        int32_t event_id_;
-        void*   event_context_;
-        int32_t event_timeout_;
-        char    event_param_[MAX_EVENT_PARAM_SIZE];
-        AFDateTime event_insert_;
+        int32_t       event_id_;
+        EventPriority event_priority_;
+        void*         event_context_;
+        int32_t       event_timeout_;
+        char          event_param_[MAX_EVENT_PARAM_SIZE];
+        AFDateTime    event_insert_;
+        int           from_thread_id_;
+        int           to_thread_id_;
 
     };
 }

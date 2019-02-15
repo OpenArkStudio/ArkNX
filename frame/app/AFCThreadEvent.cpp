@@ -3,9 +3,14 @@
 namespace ark
 {
 
-    AFCThreadEvent::AFCThreadEvent() :event_id_(0), event_context_(NULL), event_timeout_(0)
+    AFCThreadEvent::AFCThreadEvent(int from_thread_id, int to_thread_id) : event_id_(0),
+        event_priority_(ARK_EVENT_PRIORITY_COSTOM),
+        event_context_(NULL),
+        event_timeout_(0)
     {
         event_param_[0] = '\0';
+        from_thread_id_ = from_thread_id;
+        to_thread_id_   = to_thread_id;
     }
 
     AFCThreadEvent::~AFCThreadEvent()
@@ -13,7 +18,7 @@ namespace ark
 
     }
 
-    void AFCThreadEvent::Set(int32_t event_id, const char* event_param, void* event_context, int32_t event_timeout /*= 0*/)
+    void AFCThreadEvent::Set(int32_t event_id, const char* event_param, void* event_context, int32_t event_timeout, EventPriority event_priority)
     {
         event_id_ = event_id;
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -24,6 +29,8 @@ namespace ark
         event_context_ = event_context;
 
         event_timeout_ = event_timeout;
+
+        event_priority_ = event_priority;
 
         event_insert_.update();
     }
@@ -61,6 +68,21 @@ namespace ark
         {
             return false;
         }
+    }
+
+    EventPriority AFCThreadEvent::GetPriority()
+    {
+        return event_priority_;
+    }
+
+    int AFCThreadEvent::GetFromThreadID()
+    {
+        return from_thread_id_;
+    }
+
+    int AFCThreadEvent::GetToThreadID()
+    {
+        return to_thread_id_;
     }
 
 }
