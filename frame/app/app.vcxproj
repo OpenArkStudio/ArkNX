@@ -102,19 +102,22 @@
   <ItemGroup>
     <ClInclude Include="..\..\test\TestEventsManager.h" />
     <ClInclude Include="..\..\test\TestLogicThreadManager.h" />
-    <ClInclude Include="..\base\AFDateTime.hpp" />
+    <ClInclude Include="AFCApplication.h" />
     <ClInclude Include="AFCDynLib.h" />
     <ClInclude Include="AFCLogicThreadManager.h" />
     <ClInclude Include="AFCPluginManager.h" />
     <ClInclude Include="AFCThread.h" />
     <ClInclude Include="AFCThreadEvent.h" />
     <ClInclude Include="AFCThreadEventsManager.h" />
+    <ClInclude Include="AFCPluginContainer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\TestEventsManager.cpp" />
     <ClCompile Include="..\..\test\TestLogicThreadManager.cpp" />
+    <ClCompile Include="AFCApplication.cpp" />
     <ClCompile Include="AFCDynLib.cpp" />
     <ClCompile Include="AFCLogicThreadManager.cpp" />
+    <ClCompile Include="AFCPluginContainer.cpp" />
     <ClCompile Include="AFCPluginManager.cpp" />
     <ClCompile Include="AFCThread.cpp" />
     <ClCompile Include="AFCThreadEvent.cpp" />

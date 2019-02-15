@@ -33,10 +33,10 @@ namespace ark
 
     AFCPluginManager::AFCPluginManager() : AFIPluginManager()
     {
-        mnNowTime = AFDateTime::GetNowTime();
+        cur_time_ = AFDateTime::GetNowTime();
     }
 
-    inline bool AFCPluginManager::Init()
+    bool AFCPluginManager::Init()
     {
         if (!LoadPluginConf())
         {
@@ -67,14 +67,14 @@ namespace ark
 
     bool AFCPluginManager::LoadPluginConf()
     {
-        if (mstrPluginConfPath.empty())
+        if (plugin_conf_path_.empty())
         {
             return true;
         }
 
-        rapidxml::file<> fdoc(mstrPluginConfPath.c_str());
+        rapidxml::file<> xml_doc(plugin_conf_path_.c_str());
         rapidxml::xml_document<>  doc;
-        doc.parse<0>(fdoc.data());
+        doc.parse<0>(xml_doc.data());
 
         rapidxml::xml_node<>* pRoot = doc.first_node();
         rapidxml::xml_node<>* pPluginsNode = pRoot->first_node("plugins");
@@ -89,32 +89,41 @@ namespace ark
             return false;
         }
 
-        mstrPluginPath = pPluginsNode->first_attribute("path")->value();
+        plugin_path_ = pPluginsNode->first_attribute("path")->value();
 
-        for (rapidxml::xml_node<>* pPluginNode = pPluginsNode->first_node("plugin"); pPluginNode != nullptr; pPluginNode = pPluginNode->next_sibling("plugin"))
-        {
-            const char* strPluginName = pPluginNode->first_attribute("name")->value();
-            if (mxPluginNameMap.insert(std::make_pair(strPluginName, true)).second)
-            {
-                mxPluginNameVec.emplace_back(strPluginName);
-            }
-        }
+        ////load plugins which run in different thread
+        //int thread_index = 0;
+        //for (rapidxml::xml_node<>* pThread = pPluginsNode->first_node("thread"); pThread != nullptr; pThread = pThread->next_sibling("thread"))
+        //{
+        //    std::map<int, std::vector<std::string>>::iterator iter = thread_plugins_.find(thread_index);
+        //    if (iter == thread_plugins_.end())
+        //    {
+        //        std::vector<std::string> vec;
+        //        thread_plugins_.insert(std::make_pair(thread_index, vec));
+        //    }
+
+        //    for (rapidxml::xml_node<>* pPluginNode = pThread->first_node("plugin"); pPluginNode != nullptr; pPluginNode = pPluginNode->next_sibling("plugin"))
+        //    {
+        //        const char* plugin_name = pPluginNode->first_attribute("name")->value();
+        //        iter->second.emplace_back(plugin_name);
+
+        //        //TODO:need order
+        //    }
+
+        //    ++thread_index;
+        //}
 
         rapidxml::xml_node<>* pResNode = pRoot->first_node("res");
-
-        if (!pResNode)
+        if (pResNode != NULL)
         {
-            ARK_ASSERT(0, "There is no res node", __FILE__, __FUNCTION__);
-            return false;
-        }
+            if (pResNode->first_attribute("path") == nullptr)
+            {
+                ARK_ASSERT(0, "There is no res.path", __FILE__, __FUNCTION__);
+                return false;
+            }
 
-        if (pResNode->first_attribute("path") == nullptr)
-        {
-            ARK_ASSERT(0, "There is no res.path", __FILE__, __FUNCTION__);
-            return false;
+            res_path_ = pResNode->first_attribute("path")->value();
         }
-
-        mstrResPath = pResNode->first_attribute("path")->value();
 
         return true;
     }
@@ -126,7 +135,7 @@ namespace ark
         if (!FindPlugin(strPluginName))
         {
             plugin->SetPluginManager(this);
-            mxPluginInstanceMap.AddElement(strPluginName, plugin);
+            mxPluginInstanceMap.insert(strPluginName, plugin);
             plugin->Install();
         }
         else
@@ -137,39 +146,34 @@ namespace ark
 
     void AFCPluginManager::Deregister(AFIPlugin* plugin)
     {
-        AFIPlugin* pPlugin = mxPluginInstanceMap.GetElement(plugin->GetPluginName());
+        AFIPlugin* pPlugin = mxPluginInstanceMap.find_value(plugin->GetPluginName());
 
         if (pPlugin != nullptr)
         {
             pPlugin->Uninstall();
-            mxPluginInstanceMap.RemoveElement(pPlugin->GetPluginName());
+            mxPluginInstanceMap.erase(pPlugin->GetPluginName());
             ARK_DELETE(pPlugin);
         }
     }
 
     AFIPlugin* AFCPluginManager::FindPlugin(const std::string& strPluginName)
     {
-        return mxPluginInstanceMap.GetElement(strPluginName);
-    }
-
-    inline int AFCPluginManager::BusID() const
-    {
-        return mnBusID;
+        return mxPluginInstanceMap.find_value(strPluginName);
     }
 
     const std::string& AFCPluginManager::AppName() const
     {
-        return mstrAppName;
+        return app_name_;
     }
 
     inline int64_t AFCPluginManager::GetNowTime() const
     {
-        return mnNowTime;
+        return cur_time_;
     }
 
     inline const std::string& AFCPluginManager::GetResPath() const
     {
-        return mstrResPath;
+        return res_path_;
     }
 
     void AFCPluginManager::SetPluginConf(const std::string& strFileName)
@@ -184,34 +188,29 @@ namespace ark
             return;
         }
 
-        mstrPluginConfPath = strFileName;
+        plugin_conf_path_ = strFileName;
     }
 
     void AFCPluginManager::SetLogPath(const std::string& log_path)
     {
-        mstrLogPath = log_path;
+        log_path_ = log_path;
     }
 
     const std::string& AFCPluginManager::GetLogPath() const
     {
-        return mstrLogPath;
-    }
-
-    void AFCPluginManager::SetBusID(const int app_id)
-    {
-        mnBusID = app_id;
+        return log_path_;
     }
 
     void AFCPluginManager::SetAppName(const std::string& app_name)
     {
-        mstrAppName = app_name;
+        app_name_ = app_name;
     }
 
     void AFCPluginManager::AddModule(const std::string& strModuleName, AFIModule* pModule)
     {
         ARK_ASSERT_RET_NONE(FindModule(strModuleName) == nullptr);
 
-        if (mxModuleInstanceMap.AddElement(strModuleName, pModule))
+        if (mxModuleInstanceMap.insert(strModuleName, pModule).second)
         {
             mxModuleInstanceVec.push_back(pModule);
         }
@@ -219,8 +218,8 @@ namespace ark
 
     void AFCPluginManager::RemoveModule(const std::string& strModuleName)
     {
-        auto pModule = mxModuleInstanceMap.GetElement(strModuleName);
-        mxModuleInstanceMap.RemoveElement(strModuleName);
+        auto pModule = mxModuleInstanceMap.find_value(strModuleName);
+        mxModuleInstanceMap.erase(strModuleName);
 
         auto iter = std::find(mxModuleInstanceVec.begin(), mxModuleInstanceVec.end(), pModule);
         if (iter != mxModuleInstanceVec.end())
@@ -231,7 +230,7 @@ namespace ark
 
     AFIModule* AFCPluginManager::FindModule(const std::string& strModuleName)
     {
-        return mxModuleInstanceMap.GetElement(strModuleName);
+        return mxModuleInstanceMap.find_value(strModuleName);
     }
 
     bool AFCPluginManager::PostInit()
@@ -278,7 +277,7 @@ namespace ark
 
     bool AFCPluginManager::Update()
     {
-        mnNowTime = AFDateTime::GetNowTime();
+        cur_time_ = AFDateTime::GetNowTime();
 
         for (const auto& iter : mxModuleInstanceVec)
         {
@@ -294,7 +293,7 @@ namespace ark
 
     bool AFCPluginManager::PreShut()
     {
-        mnNowTime = AFDateTime::GetNowTime();
+        cur_time_ = AFDateTime::GetNowTime();
 
         for (const auto& iter : mxModuleInstanceVec)
         {
@@ -324,24 +323,24 @@ namespace ark
             UnloadPluginLibrary(it.first);
         }
 
-        mxPluginInstanceMap.ClearAll();
+        mxPluginInstanceMap.clear();
         mxPluginNameMap.clear();
         return true;
     }
 
     bool AFCPluginManager::LoadPluginLibrary(const std::string& plugin_name)
     {
-        AFCDynLib* pDynLib = mxPluginLibMap.GetElement(plugin_name);
+        AFCDynLib* pDynLib = mxPluginLibMap.find_value(plugin_name);
         if (pDynLib != nullptr)
         {
             return false;
         }
 
         AFCDynLib* pLib = ARK_NEW AFCDynLib(plugin_name);
-        bool bLoad = pLib->Load(mstrPluginPath);
+        bool bLoad = pLib->Load(plugin_path_);
         if (bLoad)
         {
-            mxPluginLibMap.AddElement(plugin_name, pLib);
+            mxPluginLibMap.insert(plugin_name, pLib);
             DLL_ENTRY_PLUGIN_FUNC pFunc = (DLL_ENTRY_PLUGIN_FUNC)pLib->GetSymbol("DllEntryPlugin");
             if (pFunc == nullptr)
             {
@@ -379,7 +378,7 @@ namespace ark
 
     bool AFCPluginManager::UnloadPluginLibrary(const std::string& plugin_name)
     {
-        AFCDynLib* pDynLib = mxPluginLibMap.GetElement(plugin_name);
+        AFCDynLib* pDynLib = mxPluginLibMap.find_value(plugin_name);
         if (pDynLib == nullptr)
         {
             return false;
@@ -394,29 +393,8 @@ namespace ark
         pDynLib->UnLoad();
 
         ARK_DELETE(pDynLib);
-        mxPluginLibMap.RemoveElement(plugin_name);
+        mxPluginLibMap.erase(plugin_name);
         return true;
     }
 
-    bool AFCPluginManager::StartReLoadState()
-    {
-        AFIModule::StartReLoadState();
-
-        for (AFIPlugin* pPlugin = mxPluginInstanceMap.First(); pPlugin != nullptr; pPlugin = mxPluginInstanceMap.Next())
-        {
-            pPlugin->StartReLoadState();
-        }
-
-        return true;
-    }
-
-    bool AFCPluginManager::EndReLoadState()
-    {
-        for (AFIPlugin* pPlugin = mxPluginInstanceMap.First(); pPlugin != nullptr; pPlugin = mxPluginInstanceMap.Next())
-        {
-            pPlugin->EndReLoadState();
-        }
-
-        return AFIModule::EndReLoadState();
-    }
 }

@@ -10,9 +10,6 @@
     <ClInclude Include="AFCPluginManager.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\base\AFDateTime.hpp">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="AFCThread.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -27,6 +24,12 @@
     </ClInclude>
     <ClInclude Include="..\..\test\TestLogicThreadManager.h">
       <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="AFCPluginContainer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AFCApplication.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +57,12 @@
     </ClCompile>
     <ClCompile Include="..\..\test\TestLogicThreadManager.cpp">
       <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="AFCPluginContainer.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AFCApplication.cpp">
+      <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
