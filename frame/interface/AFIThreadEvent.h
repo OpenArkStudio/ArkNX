@@ -40,6 +40,8 @@ namespace ark
         virtual int GetToThreadID() = 0;
 
         virtual EventPriority GetPriority() = 0;
+
+
     };
 }
 

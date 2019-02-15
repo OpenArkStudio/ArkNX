@@ -217,7 +217,9 @@ namespace ark
 
     bool AFCThread::Pause()
     {
+        Lock();
         SetThreadState(ARK_THREAD_STATE_LOGIC_PAUSE);
+        UnLock();
         return true;
     }
 
@@ -340,7 +342,7 @@ namespace ark
             timeradd(&now, &Interval, &abstime);
 
             outtime.tv_sec = abstime.tv_sec;
-            outtime.tv_nsec = abstime.tv_usec * 1000;  //单位是纳秒
+            outtime.tv_nsec = abstime.tv_usec * 1000;
 
             pthread_cond_timedwait(thread_cond_,
                                    thread_mutex_,
