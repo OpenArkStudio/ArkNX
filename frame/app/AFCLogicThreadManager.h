@@ -46,6 +46,7 @@ namespace ark
         void Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager, AFIThreadEventsManager* event_manager);
 
         virtual bool CreateThread(int thread_logic_id,
+                                  ThreadEventGetType thread_event_get_type,
                                   ThreadInit thread_init,
                                   ThreadCallbackLogic thread_callback_logic,
                                   ThreadErrorLogic thread_callback_error,

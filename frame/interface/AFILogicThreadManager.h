@@ -33,6 +33,7 @@ namespace ark
         virtual ~AFILogicThreadManager() {};
 
         virtual bool CreateThread(int thread_logic_id,
+                                  ThreadEventGetType thread_event_get_type,
                                   ThreadInit thread_init,
                                   ThreadCallbackLogic thread_callback_logic,
                                   ThreadErrorLogic thread_callback_error,

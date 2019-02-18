@@ -86,6 +86,7 @@ namespace ark
     }
 
     bool AFCLogicThreadManager::CreateThread(int thread_logic_id,
+            ThreadEventGetType thread_event_get_type,
             ThreadInit thread_init,
             ThreadCallbackLogic thread_callback_logic,
             ThreadErrorLogic thread_callback_error,
@@ -111,6 +112,7 @@ namespace ark
         }
 
         bool blret = thread_info->CreateThread(thread_logic_id,
+                                               thread_event_get_type,
                                                thread_init,
                                                thread_callback_logic,
                                                thread_callback_error,

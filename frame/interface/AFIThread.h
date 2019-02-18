@@ -78,6 +78,12 @@ namespace ark
         ARK_THREAD_LOGIC_TIMEOUT
     };
 
+    enum ThreadEventGetType
+    {
+        ARK_THREAD_EVENT_GET_SINGLE = 0,
+        ARK_THREAD_EVENT_GET_ALL,
+    };
+
     class AFILogicThreadReturn
     {
     public:
@@ -152,6 +158,8 @@ namespace ark
         virtual AFIManager* GetManager() = 0;
 
         virtual void SetCond(int interval_timeout) = 0;
+
+        virtual ThreadEventGetType GetThreadEventGetType() = 0;
     };
 
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -168,7 +176,7 @@ namespace ark
 
     typedef void(*ThreadInit)(int, AFIPluginManager*);
 
-    typedef AFILogicThreadReturn(*ThreadCallbackLogic)(int, AFIThreadEvent*, AFIManager*, void*);
+    typedef AFILogicThreadReturn(*ThreadCallbackLogic)(int, vector<AFIThreadEvent*>& thread_events_list, AFIManager*, void*);
 
     typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int&, void*);
 
