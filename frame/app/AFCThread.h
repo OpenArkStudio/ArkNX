@@ -50,6 +50,7 @@ namespace ark
         virtual ~AFCThread();
 
         bool CreateThread(int thread_logic_id,
+                          ThreadEventGetType thread_event_get_type,
                           ThreadInit thread_init,
                           ThreadCallbackLogic thread_callback_logic,
                           ThreadErrorLogic thread_callback_error,
@@ -87,6 +88,8 @@ namespace ark
 
         virtual void SetCond(int interval_timeout = 0);
 
+        virtual ThreadEventGetType GetThreadEventGetType();
+
         AFDateTime GetCreatehreadTime();
 
         AFDateTime GetLogicBeginThreadTime();
@@ -98,17 +101,18 @@ namespace ark
         void ThreadTimeoutCallBack();
 
     private:
-        int      thread_logic_id_;
-        ThreadID thread_id_;
-        ThreadMutex* thread_mutex_;
-        ThreadCond* thread_cond_;
-        AFCThreadParam thread_param_;
-        AFDateTime create_thread_time_;
-        AFDateTime logic_begin_thread_time_;
-        AFDateTime logic_end_thread_time_;
-        ThreadState thread_state_;
-        AFIManager manager_;
-        ThreadErrorLogic thread_error_logic_;
+        int                thread_logic_id_;
+        ThreadID           thread_id_;
+        ThreadMutex*       thread_mutex_;
+        ThreadCond*        thread_cond_;
+        AFCThreadParam     thread_param_;
+        AFDateTime         create_thread_time_;
+        AFDateTime         logic_begin_thread_time_;
+        AFDateTime         logic_end_thread_time_;
+        ThreadState        thread_state_;
+        AFIManager         manager_;
+        ThreadEventGetType thread_event_get_type_;
+        ThreadErrorLogic   thread_error_logic_;
     };
 }
 

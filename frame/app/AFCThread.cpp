@@ -11,6 +11,8 @@ namespace ark
 #endif
     {
         int logic_thread_pause_timeout = 0;
+        vector<AFIThreadEvent*> thread_events_list;
+
         AFCThreadParam* thread_param = (AFCThreadParam*)arg;
 
         //Init thread func
@@ -28,18 +30,40 @@ namespace ark
 
             int error_id = 0;
             thread_param->thread_->SaveLastRunTimeBegin();
-            AFIThreadEvent* thread_event = thread_param->thread_->GetManager()->GetThreadEventManager()->GetEvent(thread_param->thread_->GetThreadLogicID());
+
+            thread_events_list.clear();
+
+            //get thread event type
+            if (ARK_THREAD_EVENT_GET_SINGLE == thread_param->thread_->GetThreadEventGetType())
+            {
+                AFIThreadEvent* thread_event = thread_param->thread_->GetManager()->GetThreadEventManager()->GetEvent(thread_param->thread_->GetThreadLogicID());
+
+                if (NULL != thread_event)
+                {
+                    thread_events_list.push_back(thread_event);
+                }
+            }
+            else
+            {
+                thread_param->thread_->GetManager()->GetThreadEventManager()->GetEvents(thread_param->thread_->GetThreadLogicID(),
+                        thread_events_list);
+            }
+
+
             AFILogicThreadReturn thread_return = thread_param->thread_callback_logic_(thread_param->thread_->GetThreadLogicID(),
-                                                 thread_event,
+                                                 thread_events_list,
                                                  thread_param->thread_->GetManager(),
                                                  thread_param->arg_);
 
             thread_param->thread_->SaveLastRunTimeEnd();
 
             //release
-            if (NULL != thread_event)
+            for (int i = 0; i < (int)thread_events_list.size(); i++)
             {
-                delete thread_event;
+                if (NULL != thread_events_list[i])
+                {
+                    delete thread_events_list[i];
+                }
             }
 
             if (ARK_THREAD_RETURN_ONCE == thread_return.thread_return_)
@@ -92,7 +116,8 @@ namespace ark
         thread_id_(HANDEL_ERROR_VALUE),
         thread_mutex_(NULL),
         thread_cond_(NULL),
-        thread_state_(ARK_THREAD_STATE_NONE)
+        thread_state_(ARK_THREAD_STATE_NONE),
+        thread_event_get_type_(ARK_THREAD_EVENT_GET_SINGLE)
     {
 #if ARK_PLATFORM == PLATFORM_WIN
         thread_mutex_ = new CRITICAL_SECTION();
@@ -123,6 +148,7 @@ namespace ark
     }
 
     bool AFCThread::CreateThread(int thread_logic_id,
+                                 ThreadEventGetType thread_event_get_type,
                                  ThreadInit thread_init,
                                  ThreadCallbackLogic thread_callback_logic,
                                  ThreadErrorLogic thread_callback_error,
@@ -144,9 +170,10 @@ namespace ark
         thread_param_.thread_exit_ = thread_exit;
         thread_param_.thread_init_ = thread_init;
 
-        thread_state_ = ARK_THREAD_STATE_INIT;
-        thread_logic_id_ = thread_logic_id;
-        thread_error_logic_ = thread_callback_error;
+        thread_state_          = ARK_THREAD_STATE_INIT;
+        thread_logic_id_       = thread_logic_id;
+        thread_error_logic_    = thread_callback_error;
+        thread_event_get_type_ = thread_event_get_type;
 
         manager_.Init(plugin_manager, event_manager, logic_manager);
 
@@ -349,6 +376,11 @@ namespace ark
                                    &outtime);
 #endif
         }
+    }
+
+    ThreadEventGetType AFCThread::GetThreadEventGetType()
+    {
+        return thread_event_get_type_;
     }
 
     int AFCThread::GetThreadLogicID()

@@ -181,6 +181,42 @@ namespace ark
         return thread_event;
     }
 
+    bool AFCThreadEventsManager::GetEvents(int thread_logic_id, vector<AFIThreadEvent*>& thread_events_list)
+    {
+        Lock();
+
+        thread_events_list.clear();
+
+        mapThreadEvents::iterator f = map_thread_events_.find(thread_logic_id);
+
+        if (f == map_thread_events_.end())
+        {
+            UnLock();
+            return false;
+        }
+
+
+        queEventList* event_list = (queEventList*)f->second;
+
+        if (event_list->size() > 0)
+        {
+            for (int i = 0; i < event_list->size(); i++)
+            {
+                thread_events_list.push_back((*event_list)[i]);
+            }
+
+            event_list->clear();
+
+            UnLock();
+            return true;
+        }
+        else
+        {
+            UnLock();
+            return false;
+        }
+    }
+
     void AFCThreadEventsManager::Lock()
     {
 #if ARK_PLATFORM == PLATFORM_WIN

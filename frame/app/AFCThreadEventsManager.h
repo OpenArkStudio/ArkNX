@@ -54,6 +54,8 @@ namespace ark
 
         virtual AFIThreadEvent* GetEvent(int thread_logic_id);
 
+        virtual bool GetEvents(int thread_logic_id, vector<AFIThreadEvent*>& thread_events_list);
+
     private:
         void Lock();
 
