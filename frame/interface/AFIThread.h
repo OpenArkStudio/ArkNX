@@ -22,7 +22,7 @@
 #define _AFITHREAD_H
 
 #include "base/AFPlatform.hpp"
-#include "interface/AFIPluginManager.h"
+#include "interface/AFIPluginContainer.h"
 #include "interface/AFIThreadEventsManager.h"
 
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -106,14 +106,14 @@ namespace ark
 
         ~AFIManager() {};
 
-        void Init(AFIPluginManager* plugin_namager, AFIThreadEventsManager* thread_event_manager, AFILogicThreadManager* logic_thread_manager)
+        void Init(AFIPluginContainer* plugin_namager, AFIThreadEventsManager* thread_event_manager, AFILogicThreadManager* logic_thread_manager)
         {
             plugin_namager_       = plugin_namager;
             thread_event_manager_ = thread_event_manager;
             logic_thread_manager_ = logic_thread_manager;
         };
 
-        AFIPluginManager* GetPlugInManager()
+        AFIPluginContainer* GetPlugInManager()
         {
             return plugin_namager_;
         }
@@ -129,12 +129,12 @@ namespace ark
         }
 
     private:
-        AFIPluginManager*      plugin_namager_;
+        AFIPluginContainer*      plugin_namager_;
         AFIThreadEventsManager* thread_event_manager_;
         AFILogicThreadManager* logic_thread_manager_;
     };
 
-    //logc thread
+    //logic thread
     class AFIThread
     {
     public:
@@ -174,13 +174,13 @@ namespace ark
 #define HANDEL_ERROR_VALUE -1
 #endif
 
-    typedef void(*ThreadInit)(int, AFIPluginManager*);
+    typedef void(*ThreadInit)(int, AFIPluginContainer*);
 
     typedef AFILogicThreadReturn(*ThreadCallbackLogic)(int, vector<AFIThreadEvent*>& thread_events_list, AFIManager*, void*);
 
     typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int&, void*);
 
-    typedef void(*ThreadExit)(int, AFIPluginManager*);
+    typedef void(*ThreadExit)(int, AFIPluginContainer*);
 
 }
 

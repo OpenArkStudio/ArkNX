@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This source file is part of ARK
 * For the latest info, see https://github.com/QuadHex
 *
@@ -23,7 +23,6 @@
 #include "base/AFPlatform.hpp"
 #include "base/AFMap.hpp"
 #include "AFIModule.h"
-#include "AFIPluginManager.h"
 
 namespace ark
 {

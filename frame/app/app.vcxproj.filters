@@ -7,9 +7,6 @@
     <ClInclude Include="AFCLogicThreadManager.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="AFCPluginManager.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="AFCThread.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -38,9 +35,6 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="AFCLogicThreadManager.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="AFCPluginManager.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="AFCThread.cpp">

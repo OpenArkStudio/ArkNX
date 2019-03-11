@@ -105,7 +105,6 @@
     <ClInclude Include="AFCApplication.h" />
     <ClInclude Include="AFCDynLib.h" />
     <ClInclude Include="AFCLogicThreadManager.h" />
-    <ClInclude Include="AFCPluginManager.h" />
     <ClInclude Include="AFCThread.h" />
     <ClInclude Include="AFCThreadEvent.h" />
     <ClInclude Include="AFCThreadEventsManager.h" />
@@ -118,7 +117,6 @@
     <ClCompile Include="AFCDynLib.cpp" />
     <ClCompile Include="AFCLogicThreadManager.cpp" />
     <ClCompile Include="AFCPluginContainer.cpp" />
-    <ClCompile Include="AFCPluginManager.cpp" />
     <ClCompile Include="AFCThread.cpp" />
     <ClCompile Include="AFCThreadEvent.cpp" />
     <ClCompile Include="AFCThreadEventsManager.cpp" />

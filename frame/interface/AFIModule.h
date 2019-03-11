@@ -1,8 +1,8 @@
 /*
-* This source file is part of ARK
+* This source file is part of ArkNX
 * For the latest info, see https://github.com/QuadHex
 *
-* Copyright (c) 2013-2017 QuadHex authors.
+* Copyright (c) 2013-2018 QuadHex authors.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@
 *
 */
 
-#pragma once
+#ifndef AFIModule_H
+#define AFIModule_H
 
 namespace ark
 {
-    class AFIPluginManager;
+    class AFIPluginContainer;
 
     class AFIModule
     {
@@ -65,40 +66,22 @@ namespace ark
             return true;
         }
 
-        virtual bool StartReLoadState()
+        virtual AFIPluginContainer* GetPluginContainer() const final
         {
-            mbReloading = true;
-            return true;
+            return plugin_container_ptr_;
         }
 
-        virtual bool EndReLoadState()
+        void SetPluginContainer(AFIPluginContainer* p)
         {
-            mbReloading = false;
-            return true;
-        }
-
-        virtual AFIPluginManager* GetPluginManager() const final
-        {
-            return pPluginManager;
-        }
-
-        void SetPluginManager(AFIPluginManager* p)
-        {
-            pPluginManager = p;
-        }
-
-        bool Loading() const
-        {
-            return mbReloading;
+            plugin_container_ptr_ = p;
         }
 
         std::string strName;
 
     protected:
-        AFIPluginManager* pPluginManager{ nullptr };
-
-    private:
-        bool mbReloading{ false };
+        AFIPluginContainer* plugin_container_ptr_{ nullptr };
     };
 
 }
+
+#endif //AFIModule_H

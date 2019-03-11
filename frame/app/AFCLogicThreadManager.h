@@ -43,7 +43,7 @@ namespace ark
 
         void Close();
 
-        void Init(int64_t main_check_time_interval, AFIPluginManager* plugin_manager, AFIThreadEventsManager* event_manager);
+        void Init(int64_t main_check_time_interval, AFIPluginContainer* plugin_manager, AFIThreadEventsManager* event_manager);
 
         virtual bool CreateThread(int thread_logic_id,
                                   ThreadEventGetType thread_event_get_type,
@@ -76,7 +76,7 @@ namespace ark
         mapThreadList          thread_list_;
         ThreadMutex*           main_thread_mutex_;
         int64_t                main_check_time_interval_;
-        AFIPluginManager*      plugin_manager_;
+        AFIPluginContainer*      plugin_manager_;
         AFIThreadEventsManager* event_manager_;
     };
 }

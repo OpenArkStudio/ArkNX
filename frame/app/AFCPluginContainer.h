@@ -28,7 +28,6 @@
 namespace ark
 {
 
-    class AFIPluginManager;
     class AFCDynLib;
     class AFIPlugin;
     class AFIModule;
@@ -42,20 +41,40 @@ namespace ark
 
         void Start() override;
 
-    private:
-        typedef void(*DLL_ENTRANCE_PLUGIN_FUNC)(AFIPluginManager* pm);
-        typedef void(*DLL_EXIT_PLUGIN_FUNC)(AFIPluginManager* pm);
+        void Register(AFIPlugin* pPlugin) override;
+        void Deregister(AFIPlugin* pPlugin) override;
 
-        std::map<std::string, bool> plugin_names_;
-        std::vector<std::string> ordered_plugin_names_; // order
+        AFIPlugin* FindPlugin(const std::string& module_name) override;
+
+        void AddModule(const std::string& module_name, AFIModule* pModule) override;
+        void RemoveModule(const std::string& module_name) override;
+        AFIModule* FindModule(const std::string& module_name) override;
+
+    protected:
+        bool Init();
+        bool PostInit();
+        bool CheckConfig();
+        bool PreUpdate();
+        bool Update();
+        bool PreShut();
+        bool Shut();
+
+        bool LoadPluginLibrary(const std::string& plugin_name);
+        bool UnloadPluginLibrary(const std::string& plugin_name);
+
+    private:
+        typedef void(*DLL_ENTRANCE_PLUGIN_FUNC)(AFIPluginContainer*);
+        typedef void(*DLL_EXIT_PLUGIN_FUNC)(AFIPluginContainer*);
+
+        std::vector<std::string> plugin_names_;
         AFMap<std::string, AFCDynLib> plugin_libs_;
         AFMap<std::string, AFIPlugin> plugin_instances_;
         AFMap<std::string, AFIModule> module_instances_;
-        std::vector<AFIModule*> ordered_module_instances_; // order
 
     private:
         AFIApplication* app_{ nullptr };
         int logic_id_{ 0 };
+        std::string plugin_path_{};
     };
 
 }

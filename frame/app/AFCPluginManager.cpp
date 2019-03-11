@@ -91,28 +91,6 @@ namespace ark
 
         plugin_path_ = pPluginsNode->first_attribute("path")->value();
 
-        ////load plugins which run in different thread
-        //int thread_index = 0;
-        //for (rapidxml::xml_node<>* pThread = pPluginsNode->first_node("thread"); pThread != nullptr; pThread = pThread->next_sibling("thread"))
-        //{
-        //    std::map<int, std::vector<std::string>>::iterator iter = thread_plugins_.find(thread_index);
-        //    if (iter == thread_plugins_.end())
-        //    {
-        //        std::vector<std::string> vec;
-        //        thread_plugins_.insert(std::make_pair(thread_index, vec));
-        //    }
-
-        //    for (rapidxml::xml_node<>* pPluginNode = pThread->first_node("plugin"); pPluginNode != nullptr; pPluginNode = pPluginNode->next_sibling("plugin"))
-        //    {
-        //        const char* plugin_name = pPluginNode->first_attribute("name")->value();
-        //        iter->second.emplace_back(plugin_name);
-
-        //        //TODO:need order
-        //    }
-
-        //    ++thread_index;
-        //}
-
         rapidxml::xml_node<>* pResNode = pRoot->first_node("res");
         if (pResNode != NULL)
         {

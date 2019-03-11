@@ -3,7 +3,7 @@
 namespace ark
 {
 
-    void TestThreadInit(int logic_thread_id, AFIPluginManager* plugin_manager)
+    void TestThreadInit(int logic_thread_id, AFIPluginContainer* plugin_manager)
     {
         printf_s("[ThreadInit]logic_thread_id=%d.\n", logic_thread_id);
     }
@@ -37,12 +37,12 @@ namespace ark
         return ARK_THREAD_ERROR_CLOSE;
     }
 
-    void TestThreadExit(int logic_thread_id, AFIPluginManager* plugin_manager)
+    void TestThreadExit(int logic_thread_id, AFIPluginContainer* plugin_manager)
     {
         printf_s("[ThreadExit]thread_event=%d.\n", logic_thread_id);
     }
 
-    void UnitTestLogicThreadManager(AFCLogicThreadManager& logic_thread_manager, AFIPluginManager* plugin_manager, AFIThreadEventsManager* thread_event_manager)
+    void UnitTestLogicThreadManager(AFCLogicThreadManager& logic_thread_manager, AFIPluginContainer* plugin_manager, AFIThreadEventsManager* thread_event_manager)
     {
         logic_thread_manager.Init(1000, plugin_manager, thread_event_manager);
 
@@ -62,4 +62,3 @@ namespace ark
     }
 
 }
-
