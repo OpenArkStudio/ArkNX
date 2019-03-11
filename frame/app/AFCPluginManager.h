@@ -51,7 +51,7 @@ namespace ark
 
         void AddModule(const std::string& strModuleName, AFIModule* pModule) override;
         void RemoveModule(const std::string& strModuleName) override;
-        virtual AFIModule* FindModule(const std::string& strModuleName) override;
+        AFIModule* FindModule(const std::string& strModuleName) override;
 
         const std::string& AppName() const override;
         void SetAppName(const std::string& app_name) override;

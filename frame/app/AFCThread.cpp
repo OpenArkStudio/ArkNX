@@ -154,7 +154,7 @@ namespace ark
                                  ThreadErrorLogic thread_callback_error,
                                  ThreadExit thread_exit,
                                  void* arg,
-                                 AFIPluginManager* plugin_manager,
+                                 AFIPluginContainer* plugin_manager,
                                  AFIThreadEventsManager* event_manager,
                                  AFILogicThreadManager* logic_manager)
     {

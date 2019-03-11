@@ -5,14 +5,14 @@
 
 namespace ark
 {
-    static void TestThreadInit(int logic_thread_id, AFIPluginManager* plugin_manager);
+    static void TestThreadInit(int logic_thread_id, AFIPluginContainer* plugin_manager);
 
-    static AFILogicThreadReturn TestThreadCallbackLogic(int logic_thread_id, AFIThreadEvent* thread_event, AFIManager* manager, void* context);
+    static AFILogicThreadReturn TestThreadCallbackLogic(int logic_thread_id, std::vector<AFIThreadEvent*>& thread_events_list, AFIManager* manager, void* context);
 
     static ThreadError TestThreadErrorLogic(int logic_thread_id, ThreadLogicErrorType error_type, int& return_error, void* context);
 
-    static void TestThreadExit(int logic_thread_id, AFIPluginManager* plugin_manager);
+    static void TestThreadExit(int logic_thread_id, AFIPluginContainer* plugin_manager);
 
-    void UnitTestLogicThreadManager(AFCLogicThreadManager& logic_thread_manager, AFIPluginManager* plugin_manager, AFIThreadEventsManager* thread_event_manager);
+    void UnitTestLogicThreadManager(AFCLogicThreadManager& logic_thread_manager, AFIPluginContainer* plugin_manager, AFIThreadEventsManager* thread_event_manager);
 }
 #endif
