@@ -28,13 +28,14 @@
 namespace ark
 {
 
-    AFCPluginContainer::AFCPluginContainer(AFIApplication* app, int logic_id, const std::string& plugin_path, const std::vector<std::string>& plugins) :
+    AFCPluginContainer::AFCPluginContainer(AFIApplication* app, int logic_id) :
         app_(app),
-        logic_id_(logic_id),
-        plugin_path_(plugin_path),
-        plugin_names_(plugins)
+        logic_id_(logic_id)
     {
         ARK_ASSERT_RET_NONE(app != nullptr);
+        //get all plug-ins
+        ARK_ASSERT_RET_NONE(app->GetPlugins(logic_id, plugin_names_) == true);
+        plugin_path_ = app->GetPluginPath();
 
         //launch state machine
         ARK_ASSERT_RET_NONE(Init());
@@ -52,8 +53,16 @@ namespace ark
 
     void AFCPluginContainer::Start()
     {
-        //create thread & run
-        //TODO:
+        std::thread plugin_thread([this]()
+        {
+            for (;; std::this_thread::sleep_for(std::chrono::microseconds(1)))
+            {
+                this->Update();
+            }
+        });
+
+        //wait for exit
+        plugin_thread.join();
     }
 
     bool AFCPluginContainer::Init()

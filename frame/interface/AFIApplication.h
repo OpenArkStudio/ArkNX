@@ -65,7 +65,9 @@ namespace ark
 
         virtual void SetPluginConfPath(const std::string& path) = 0;
 
+        virtual const std::string& GetPluginPath() = 0;
 
+        virtual bool GetPlugins(const int logic_id, std::vector<std::string>& plugins) = 0;
     };
 
 }

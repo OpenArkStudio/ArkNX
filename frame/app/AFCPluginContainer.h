@@ -36,7 +36,7 @@ namespace ark
     class AFCPluginContainer : public AFIPluginContainer
     {
     public:
-        AFCPluginContainer(AFIApplication* app, int logic_id, const std::string& plugin_path, const std::vector<std::string>& plugins);
+        AFCPluginContainer(AFIApplication* app, int logic_id);
         ~AFCPluginContainer() override;
 
         void Start() override;

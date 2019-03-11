@@ -58,7 +58,7 @@ namespace ark
             int thread_logic_id = iter.first;
             const std::vector<std::string>& thread_plugins = iter.second;
             //create a PluginContainer
-            AFIPluginContainer* plugin_container = ARK_NEW AFCPluginContainer(this, thread_logic_id, plugin_path_, thread_plugins);
+            AFIPluginContainer* plugin_container = ARK_NEW AFCPluginContainer(this, thread_logic_id);
             //Start plugin container
             plugin_container->Start();
             //manage
@@ -109,6 +109,24 @@ namespace ark
     void AFCApplication::SetPluginConfPath(const std::string& path)
     {
         plugin_conf_path_ = path;
+    }
+
+
+    const std::string& AFCApplication::GetPluginPath()
+    {
+        return plugin_path_;
+    }
+
+    bool AFCApplication::GetPlugins(const int logic_id, std::vector<std::string>& plugins)
+    {
+        auto iter = thread_plugins_.find(logic_id);
+        if (iter == thread_plugins_.end())
+        {
+            return false;
+        }
+
+        plugins = iter->second;
+        return true;
     }
 
     bool AFCApplication::LoadPluginConf()
