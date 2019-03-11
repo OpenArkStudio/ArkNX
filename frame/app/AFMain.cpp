@@ -22,10 +22,11 @@
 #include "base/AFMacros.hpp"
 #include "base/AFDateTime.hpp"
 #include "base/AFMisc.hpp"
-#include "AFCPluginManager.h"
+#include "interface/AFIApplication.h"
+#include "AFCApplication.h"
 
-#include "../test/TestLogicThreadManager.h"
-#include "../test/TestEventsManager.h"
+//#include "../test/TestLogicThreadManager.h"
+//#include "../test/TestEventsManager.h"
 
 using namespace ark;
 
@@ -53,7 +54,7 @@ long ApplicationCrashHandler(EXCEPTION_POINTERS* pException)
 {
     AFDateTime now;
     std::string dump_name = ARK_FORMAT("{}-{:04d}{:02d}{:02d}_{:02d}_{:02d}_{:02d}.dmp",
-                                       AFCPluginManager::get()->AppName(),
+                                       "ArkNX",
                                        now.GetYear(), now.GetMonth(), now.GetDay(),
                                        now.GetHour(), now.GetMinute(), now.GetSecond());
 
@@ -193,11 +194,10 @@ bool ParseArgs(int argc, char* argv[])
 
     //Set app name
     if (name)
-{
-    AFCPluginManager::get()->SetAppName(name.Get());
-
-        std::string process_name = ARK_FORMAT("{}", name.Get());
-        //Set process name
+	{
+		//AFCPluginManager::get()->SetAppName(name.Get());
+		std::string process_name = ARK_FORMAT("{}", name.Get());
+	//Set process name
 #if ARK_PLATFORM == PLATFORM_WIN
         SetConsoleTitle(process_name.c_str());
 #elif ARK_PLATFORM == PLATFORM_UNIX
@@ -215,27 +215,26 @@ bool ParseArgs(int argc, char* argv[])
     return true;
 }
 
-void MainLoop()
-{
-#if ARK_PLATFORM == PLATFORM_WIN
-
-    __try
-    {
-        AFCPluginManager::get()->Update();
-    }
-    __except (ApplicationCrashHandler(GetExceptionInformation()))
-    {
-        //Do nothing for now.
-    }
-
-#else
-    AFCPluginManager::get()->Update();
-#endif
-}
+//void MainLoop()
+//{
+//#if ARK_PLATFORM == PLATFORM_WIN
+//
+//    __try
+//    {
+//        AFCPluginManager::get()->Update();
+//    }
+//    __except (ApplicationCrashHandler(GetExceptionInformation()))
+//    {
+//        //Do nothing for now.
+//    }
+//
+//#else
+//    AFCPluginManager::get()->Update();
+//#endif
+//}
 
 int main(int argc, char* argv[])
 {
-/*
     if (!ParseArgs(argc, argv))
     {
         CONSOLE_INFO_LOG << "Application parameter is invalid, please check it..." << std::endl;
@@ -244,49 +243,15 @@ int main(int argc, char* argv[])
 
     PrintLogo();
 
-    AFIPluginManager* thread_event_manager = ARK_NEW AFCPluginManager();
-    AFILogicThreadManager* logic_thread_manager = ARK_NEW AFCLogicThreadManager();
-    AFIThreadEventsManager* thread_event_manager = ARK_NEW AFCThreadEventsManager();
-    logic_thread_manager.Init(1, AFCPluginManager::get(), &thread_event_manager);
-    AFCPluginManager::get()->Start(&logic_thread_manager);
+	AFIApplication* app = ARK_NEW AFCApplication();
+	app->Start();
 
-    ARK_ASSERT_RET_VAL(, -1);
-    ARK_ASSERT_RET_VAL(AFCPluginManager::get()->PostInit(), -1);
-    ARK_ASSERT_RET_VAL(AFCPluginManager::get()->CheckConfig(), -1);
-    ARK_ASSERT_RET_VAL(AFCPluginManager::get()->PreUpdate(), -1);
-
-    while (!g_exit_loop)
+    while (!app->Stoped())
     {
-        while (true)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-            if (g_exit_loop)
-            {
-                break;
-            }
-
-            MainLoop();
-        }
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
-    AFCPluginManager::get()->PreShut();
-    AFCPluginManager::get()->Shut();
-
-    g_cmd_thread.join();
-*/
-	//test code
-	AFCLogicThreadManager logic_thread_manager;
-	AFCThreadEventsManager thread_event_manager;
-	AFCPluginManager plug_manager;
-
-	UnitTestLogicThreadManager(logic_thread_manager, 
-		(AFIPluginManager*)&plug_manager,
-		(AFIThreadEventsManager* )&thread_event_manager);
-
-	UnitTestEventsManager(thread_event_manager, (AFIThreadWakeUp* )&logic_thread_manager);
-
-	getchar();
+	ARK_DELETE(app);
 
     return 0;
 }
