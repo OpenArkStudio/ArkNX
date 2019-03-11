@@ -18,8 +18,10 @@
 *
 */
 
-#ifndef AFI_APPLICATION_H
-#define AFI_APPLICATION_H
+#ifndef AFIApplication_H
+#define AFIApplication_H
+
+#include "base/AFPlatform.hpp"
 
 namespace ark
 {
@@ -50,6 +52,7 @@ namespace ark
         }
 
         virtual bool Start() = 0;
+        virtual bool Stoped() = 0;
 
         virtual void RegModule(const std::string& module_uid, AFIModule* module_ptr) = 0;
         virtual void DeregModule(const std::string& module_uid) = 0;
@@ -61,8 +64,10 @@ namespace ark
         virtual int64_t GetNowTime() const = 0;
 
         virtual void SetPluginConfPath(const std::string& path) = 0;
+
+
     };
 
 }
 
-#endif //AFI_APPLICATION_H
+#endif //AFIApplication_H

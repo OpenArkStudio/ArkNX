@@ -25,6 +25,7 @@
 #include "base/AFDateTime.hpp"
 #include "interface/AFIModule.h"
 #include "AFCApplication.h"
+#include "AFCPluginContainer.h"
 
 namespace ark
 {
@@ -32,19 +33,46 @@ namespace ark
     AFCApplication::AFCApplication()
     {
         cur_time_ = AFDateTime::GetNowTime();
+
+        if (!LoadPluginConf())
+        {
+            ARK_ASSERT_NO_EFFECT(0);
+        }
+    }
+
+
+    AFCApplication::~AFCApplication()
+    {
+        //release all plugin containers.
+        for (auto iter : plugin_containers_)
+        {
+            ARK_DELETE(iter.second);
+        }
     }
 
     bool AFCApplication::Start()
     {
-        if (!LoadPluginConf())
+        //Then create threads by configuration
+        for (auto iter : thread_plugins_)
         {
-            return false;
+            int thread_logic_id = iter.first;
+            const std::vector<std::string>& thread_plugins = iter.second;
+            //create a PluginContainer
+            AFIPluginContainer* plugin_container = ARK_NEW AFCPluginContainer(this, thread_logic_id, plugin_path_, thread_plugins);
+            //Start plugin container
+            plugin_container->Start();
+            //manage
+            plugin_containers_.insert(thread_logic_id, plugin_container);
         }
 
-        //Then create threads by configuration
-        //TODO:
-
         return true;
+    }
+
+
+    bool AFCApplication::Stoped()
+    {
+        //TODO:
+        return false;
     }
 
     void AFCApplication::RegModule(const std::string& module_uid, AFIModule* module_ptr)
@@ -85,7 +113,52 @@ namespace ark
 
     bool AFCApplication::LoadPluginConf()
     {
-        //TODO:
+        if (plugin_conf_path_.empty())
+        {
+            return true;
+        }
+
+        rapidxml::file<> xml_doc(plugin_conf_path_.c_str());
+        rapidxml::xml_document<>  doc;
+        doc.parse<0>(xml_doc.data());
+
+        rapidxml::xml_node<>* pRoot = doc.first_node();
+        rapidxml::xml_node<>* pPluginsNode = pRoot->first_node("plugins");
+        if (pPluginsNode == nullptr)
+        {
+            return false;
+        }
+
+        if (pPluginsNode->first_attribute("path") == nullptr)
+        {
+            ARK_ASSERT(0, "There are no ConfigPath.Name", __FILE__, __FUNCTION__);
+            return false;
+        }
+
+        plugin_path_ = pPluginsNode->first_attribute("path")->value();
+
+        //load plugins which run in different thread
+        int logic_index = 1;
+        for (rapidxml::xml_node<>* pThread = pPluginsNode->first_node("thread"); pThread != nullptr; pThread = pThread->next_sibling("thread"))
+        {
+            std::map<int, std::vector<std::string>>::iterator iter = thread_plugins_.find(logic_index);
+            if (iter == thread_plugins_.end())
+            {
+                std::vector<std::string> vec;
+                thread_plugins_.insert(std::make_pair(logic_index, vec));
+            }
+
+            for (rapidxml::xml_node<>* pPluginNode = pThread->first_node("plugin"); pPluginNode != nullptr; pPluginNode = pPluginNode->next_sibling("plugin"))
+            {
+                const char* plugin_name = pPluginNode->first_attribute("name")->value();
+                iter->second.emplace_back(plugin_name);
+
+                //TODO:need order
+            }
+
+            ++logic_index;
+        }
+
         return true;
     }
 

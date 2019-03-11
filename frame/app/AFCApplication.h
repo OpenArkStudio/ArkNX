@@ -18,23 +18,27 @@
 *
 */
 
-#ifndef AFC_APPLICATION_H
-#define AFC_APPLICATION_H
+#ifndef AFCApplication_H
+#define AFCApplication_H
 
 #include "base/AFPlatform.hpp"
 #include "base/AFMap.hpp"
 #include "interface/AFIApplication.h"
+#include "interface/AFIPluginContainer.h"
 
 namespace ark
 {
+
     class AFIModule;
 
     class AFCApplication : public AFIApplication
     {
     public:
         AFCApplication();
+        ~AFCApplication() override;
 
         virtual bool Start();
+        virtual bool Stoped();
 
         virtual void RegModule(const std::string& module_uid, AFIModule* module_ptr);
         virtual void DeregModule(const std::string& module_uid);
@@ -57,9 +61,11 @@ namespace ark
         std::string plugin_path_{};     //plugin dll/so directory
         std::string plugin_conf_path_{};//plugin config path
 
+        std::map<int, std::vector<std::string>> thread_plugins_;
         AFMap<std::string, AFIModule> module_instances_;    //manage all modules
+        AFMap<int, AFIPluginContainer> plugin_containers_;
     };
 
 }
 
-#endif //AFC_APPLICATION_H
+#endif //AFCApplication_H
