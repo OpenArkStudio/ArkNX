@@ -44,10 +44,10 @@ namespace ark
             assert((std::is_base_of<AFIModule, classBaseName>::value));
             assert((std::is_base_of<classBaseName, className>::value));
             AFIModule* pRegModuleName = ARK_NEW className();
-            pRegModuleName->SetPluginManager(pPluginManager);
+            pRegModuleName->SetPluginContainer(plugin_container_ptr_);
             pRegModuleName->strName = typeid(classBaseName).name();
-            pPluginManager->AddModule(typeid(classBaseName).name(), pRegModuleName);
-            mxModules.AddElement(typeid(classBaseName).name(), pRegModuleName);
+            plugin_container_ptr_->AddModule(pRegModuleName->strName, pRegModuleName);
+            modules_.insert(pRegModuleName->strName, pRegModuleName);
 #if ARK_PLATFORM == PLATFORM_WIN
             if ((&className::Update != &AFIModule::Update))
 #else
@@ -59,24 +59,25 @@ namespace ark
             if (base_update_mfp == derived_update_mfp)
 #endif
             {
-                mxModulesUpdates.AddElement(typeid(classBaseName).name(), pRegModuleName);
+                module_updates_.insert(pRegModuleName->strName, pRegModuleName);
             }
         }
 
         template<typename classBaseName, typename className>
         void DeregisterModule()
         {
-            AFIModule* pDeregModuleName = dynamic_cast<AFIModule*>(pPluginManager->FindModule(typeid(classBaseName).name()));
-            pPluginManager->RemoveModule(typeid(classBaseName).name());
-            mxModules.RemoveElement(typeid(classBaseName).name());
-            mxModulesUpdates.RemoveElement(typeid(classBaseName).name());
+            std::string name = typeid(classBaseName).name();
+            AFIModule* pDeregModuleName = dynamic_cast<AFIModule*>(plugin_container_ptr_->FindModule(name));
+            plugin_container_ptr_->RemoveModule(name);
+            modules_.erase(typeid(classBaseName).name());
+            module_updates_.erase(name);
             ARK_DELETE(pDeregModuleName);
         }
 
     protected:
         //All registered modules
-        AFMap<std::string, AFIModule> mxModules;
-        AFMap<std::string, AFIModule> mxModulesUpdates;
+        AFMap<std::string, AFIModule> modules_;
+        AFMap<std::string, AFIModule> module_updates_;
     };
 
 }
