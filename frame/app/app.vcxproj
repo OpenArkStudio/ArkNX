@@ -61,6 +61,8 @@
       <PreprocessorDefinitions>_X64;_DEBUG;_CONSOLE;AF_DYNAMIC_PLUGIN;ELPP_NO_DEFAULT_LOG_FILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\dep\;$(SolutionDir)..\dep\protobuf\src\;$(SolutionDir)..\test\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>false</BrowseInformation>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

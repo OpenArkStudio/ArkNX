@@ -53,6 +53,14 @@ namespace ark
                                   ThreadExit thread_exit,
                                   void* arg);
 
+        virtual bool CreateThread(int thread_logic_id,
+                                  ThreadEventGetType thread_event_get_type,
+                                  StateMechineFunction init,
+                                  StateMechineFunction run,
+                                  StateMechineFunction error,
+                                  StateMechineFunction exit,
+                                  void* args);
+
         virtual bool KillThread(int thread_logic_id);
 
         virtual bool IsAlive(int thread_logic_id);

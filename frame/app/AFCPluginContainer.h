@@ -39,7 +39,10 @@ namespace ark
         AFCPluginContainer(AFIApplication* app, int logic_id);
         ~AFCPluginContainer() override;
 
-        void Start() override;
+        virtual bool Init();
+        virtual bool Update();
+        virtual bool Error();
+        virtual bool Exit();
 
         void Register(AFIPlugin* pPlugin) override;
         void Deregister(AFIPlugin* pPlugin) override;
@@ -51,13 +54,13 @@ namespace ark
         AFIModule* FindModule(const std::string& module_name) override;
 
     protected:
-        bool Init();
-        bool PostInit();
-        bool CheckConfig();
-        bool PreUpdate();
-        bool Update();
-        bool PreShut();
-        bool Shut();
+        //bool Init();
+        //bool PostInit();
+        //bool CheckConfig();
+        //bool PreUpdate();
+        //bool Update();
+        //bool PreShut();
+        //bool Shut();
 
         bool LoadPluginLibrary(const std::string& plugin_name);
         bool UnloadPluginLibrary(const std::string& plugin_name);

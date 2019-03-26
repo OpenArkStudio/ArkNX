@@ -26,6 +26,7 @@
 #include "interface/AFIModule.h"
 #include "AFCApplication.h"
 #include "AFCPluginContainer.h"
+#include "AFCLogicThreadManager.h"
 
 namespace ark
 {
@@ -33,6 +34,7 @@ namespace ark
     AFCApplication::AFCApplication()
     {
         cur_time_ = AFDateTime::GetNowTime();
+        logic_thread_manager_ = ARK_NEW AFCLogicThreadManager();
 
         if (!LoadPluginConf())
         {
@@ -48,6 +50,8 @@ namespace ark
         {
             ARK_DELETE(iter.second);
         }
+
+        ARK_DELETE(logic_thread_manager_);
     }
 
     bool AFCApplication::Start()
@@ -59,8 +63,17 @@ namespace ark
             const std::vector<std::string>& thread_plugins = iter.second;
             //create a PluginContainer
             AFIPluginContainer* plugin_container = ARK_NEW AFCPluginContainer(this, thread_logic_id);
-            //Start plugin container
-            plugin_container->Start();
+            ////Start plugin container
+            //plugin_container->Start();
+            logic_thread_manager_->CreateThread(thread_logic_id,
+                                                ARK_THREAD_EVENT_GET_SINGLE,
+                                                plugin_container,
+                                                &AFIPluginContainer::Init,
+                                                &AFIPluginContainer::Update,
+                                                &AFIPluginContainer::Error,
+                                                &AFIPluginContainer::Exit,
+                                                nullptr);
+
             //manage
             plugin_containers_.insert(thread_logic_id, plugin_container);
         }

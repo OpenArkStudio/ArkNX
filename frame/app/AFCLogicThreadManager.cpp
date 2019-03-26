@@ -2,7 +2,7 @@
 
 namespace ark
 {
-    //run mian thread logic
+    //run main thread logic
 #if ARK_PLATFORM == PLATFORM_WIN
     unsigned __stdcall MainThreadCallbackRun(void* arg)
 #else
@@ -135,6 +135,19 @@ namespace ark
             return false;
         }
 
+    }
+
+
+    bool AFCLogicThreadManager::CreateThread(int thread_logic_id,
+            ThreadEventGetType thread_event_get_type,
+            StateMechineFunction init,
+            StateMechineFunction run,
+            StateMechineFunction error,
+            StateMechineFunction exit,
+            void* args)
+    {
+        //TODO:
+        return true;
     }
 
     bool AFCLogicThreadManager::KillThread(int thread_logic_id)

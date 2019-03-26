@@ -25,6 +25,7 @@
 #include "base/AFMap.hpp"
 #include "interface/AFIApplication.h"
 #include "interface/AFIPluginContainer.h"
+#include "interface/AFILogicThreadManager.h"
 
 namespace ark
 {
@@ -68,6 +69,8 @@ namespace ark
         std::map<int, std::vector<std::string>> thread_plugins_;
         AFMap<std::string, AFIModule> module_instances_;    //manage all modules
         AFMap<int, AFIPluginContainer> plugin_containers_;
+
+        AFILogicThreadManager* logic_thread_manager_{ nullptr };
     };
 
 }

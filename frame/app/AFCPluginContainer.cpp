@@ -36,33 +36,11 @@ namespace ark
         //get all plug-ins
         ARK_ASSERT_RET_NONE(app->GetPlugins(logic_id, plugin_names_) == true);
         plugin_path_ = app->GetPluginPath();
-
-        //launch state machine
-        ARK_ASSERT_RET_NONE(Init());
-        ARK_ASSERT_RET_NONE(PostInit());
-        ARK_ASSERT_RET_NONE(CheckConfig());
-        ARK_ASSERT_RET_NONE(PreUpdate());
     }
 
     AFCPluginContainer::~AFCPluginContainer()
     {
-        //shutdown
-        ARK_ASSERT_RET_NONE(PreShut());
-        ARK_ASSERT_RET_NONE(Shut());
-    }
 
-    void AFCPluginContainer::Start()
-    {
-        std::thread plugin_thread([this]()
-        {
-            for (;; std::this_thread::sleep_for(std::chrono::microseconds(1)))
-            {
-                this->Update();
-            }
-        });
-
-        //wait for exit
-        plugin_thread.join();
     }
 
     bool AFCPluginContainer::Init()
@@ -83,47 +61,33 @@ namespace ark
             }
         }
 
-        return true;
-    }
+        ////For now, DO NOT use
+        //for (const auto& iter : module_instances_)
+        //{
+        //    AFIModule* pModule = iter.second;
+        //    if (pModule)
+        //    {
+        //        pModule->PostInit();
+        //    }
+        //}
 
-    bool AFCPluginContainer::PostInit()
-    {
-        for (const auto& iter : module_instances_)
-        {
-            AFIModule* pModule = iter.second;
-            if (pModule)
-            {
-                pModule->PostInit();
-            }
-        }
+        //for (const auto& iter : module_instances_)
+        //{
+        //    AFIModule* pModule = iter.second;
+        //    if (pModule)
+        //    {
+        //        pModule->CheckConfig();
+        //    }
+        //}
 
-        return true;
-    }
-
-    bool AFCPluginContainer::CheckConfig()
-    {
-        for (const auto& iter : module_instances_)
-        {
-            AFIModule* pModule = iter.second;
-            if (pModule)
-            {
-                pModule->CheckConfig();
-            }
-        }
-
-        return true;
-    }
-
-    bool AFCPluginContainer::PreUpdate()
-    {
-        for (const auto& iter : module_instances_)
-        {
-            AFIModule* pModule = iter.second;
-            if (pModule)
-            {
-                pModule->PreUpdate();
-            }
-        }
+        //for (const auto& iter : module_instances_)
+        //{
+        //    AFIModule* pModule = iter.second;
+        //    if (pModule)
+        //    {
+        //        pModule->PreUpdate();
+        //    }
+        //}
 
         return true;
     }
@@ -145,7 +109,14 @@ namespace ark
         return true;
     }
 
-    bool AFCPluginContainer::PreShut()
+    bool AFCPluginContainer::Error()
+    {
+        //Do something
+        //e.g. log or some special things
+        return true;
+    }
+
+    bool AFCPluginContainer::Exit()
     {
         for (const auto& iter : module_instances_)
         {
@@ -156,11 +127,6 @@ namespace ark
             }
         }
 
-        return true;
-    }
-
-    bool AFCPluginContainer::Shut()
-    {
         for (const auto& iter : module_instances_)
         {
             AFIModule* pModule = iter.second;

@@ -45,7 +45,10 @@ ARK_EXPORT void DllExitPlugin(AFIPluginContainer* p)    \
     public:
         virtual ~AFIPluginContainer() {}
 
-        virtual void Start() = 0;
+        virtual bool Init() = 0;
+        virtual bool Update() = 0;
+        virtual bool Error() = 0;
+        virtual bool Exit() = 0;
 
         template <typename T>
         T* FindModule()

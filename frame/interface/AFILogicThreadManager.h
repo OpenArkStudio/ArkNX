@@ -21,6 +21,8 @@
 #ifndef _AFILOGICTHREADMANAGER_H
 #define _AFILOGICTHREADMANAGER_H
 
+#include "base/bind.hpp"
+#include "base/functional.hpp"
 #include "interface/AFIThread.h"
 
 namespace ark
@@ -31,6 +33,28 @@ namespace ark
     public:
         AFILogicThreadManager() {};
         virtual ~AFILogicThreadManager() {};
+
+        //////////////////////////////////////////////////////////////////////////
+        typedef std::function<bool()> StateMechineFunction;
+
+        template<typename BASE_TYPE>
+        bool CreateThread(int thread_logic_id,
+                          ThreadEventGetType thread_event_get_type,
+                          BASE_TYPE* base,
+                          bool (BASE_TYPE::*init_function)(),
+                          bool (BASE_TYPE::*run_function)(),
+                          bool (BASE_TYPE::*error_function)(),
+                          bool (BASE_TYPE::*exit_function)(),
+                          void* args)
+        {
+            auto init = std::bind(init_function, base);
+            auto run = std::bind(run_function, base);
+            auto error = std::bind(error_function, base);
+            auto exit = std::bind(exit_function, base);
+
+            return CreateThread(thread_logic_id, thread_event_get_type, init, run, error, exit, args);
+        }
+        //////////////////////////////////////////////////////////////////////////
 
         virtual bool CreateThread(int thread_logic_id,
                                   ThreadEventGetType thread_event_get_type,
@@ -47,6 +71,15 @@ namespace ark
         virtual bool Pause(int thread_logic_id) = 0;
 
         virtual bool Resume(int thread_logic_id) = 0;
+
+    protected:
+        virtual bool CreateThread(int thread_logic_id,
+                                  ThreadEventGetType thread_event_get_type,
+                                  StateMechineFunction init,
+                                  StateMechineFunction run,
+                                  StateMechineFunction error,
+                                  StateMechineFunction exit,
+                                  void* args) = 0;
     };
 
 }
