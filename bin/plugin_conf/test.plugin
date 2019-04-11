@@ -1,11 +1,11 @@
 <xml>
 	<plugins path="../lib/">
 		<thread>
-			<plugin name="TestPlugin" />
+			<plugin name="TestPlugin" version="0.0.1"/>
 		</thread>
 		<!--
 		<thread>
-			<plugin name="some_plugin" />
+			<plugin name="some_plugin" version="0.0.1"/>
 		</thread>
 		-->
 	</plugins>

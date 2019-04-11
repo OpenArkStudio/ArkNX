@@ -18,11 +18,12 @@
 *
 */
 
-#include "rapidxml/rapidxml.hpp"
-#include "rapidxml/rapidxml_iterators.hpp"
-#include "rapidxml/rapidxml_print.hpp"
-#include "rapidxml/rapidxml_utils.hpp"
+//#include "rapidxml/rapidxml.hpp"
+//#include "rapidxml/rapidxml_iterators.hpp"
+//#include "rapidxml/rapidxml_print.hpp"
+//#include "rapidxml/rapidxml_utils.hpp"
 #include "base/AFDateTime.hpp"
+#include "base/AFXml.hpp"
 #include "interface/AFIModule.h"
 #include "AFCApplication.h"
 #include "AFCPluginContainer.h"
@@ -42,13 +43,13 @@ namespace ark
         }
     }
 
-
     AFCApplication::~AFCApplication()
     {
         //release all plugin containers.
-        for (auto iter : plugin_containers_)
+        for (AFMap<int, AFIPluginContainer>::iterator iter = plugin_containers_.begin(); iter != plugin_containers_.end(); ++iter)
         {
-            ARK_DELETE(iter.second);
+            logic_thread_manager_->KillThread(iter->first);
+            ARK_DELETE(iter->second);
         }
 
         ARK_DELETE(logic_thread_manager_);
@@ -63,8 +64,7 @@ namespace ark
             const std::vector<std::string>& thread_plugins = iter.second;
             //create a PluginContainer
             AFIPluginContainer* plugin_container = ARK_NEW AFCPluginContainer(this, thread_logic_id);
-            ////Start plugin container
-            //plugin_container->Start();
+            //Start plugin container thread
             logic_thread_manager_->CreateThread(thread_logic_id,
                                                 ARK_THREAD_EVENT_GET_SINGLE,
                                                 plugin_container,
@@ -149,28 +149,19 @@ namespace ark
             return true;
         }
 
-        rapidxml::file<> xml_doc(plugin_conf_path_.c_str());
-        rapidxml::xml_document<>  doc;
-        doc.parse<0>(xml_doc.data());
+        AFXml xml_doc(plugin_conf_path_);
+        AFXmlNode root = xml_doc.GetRootNode();
 
-        rapidxml::xml_node<>* pRoot = doc.first_node();
-        rapidxml::xml_node<>* pPluginsNode = pRoot->first_node("plugins");
-        if (pPluginsNode == nullptr)
+        AFXmlNode plugins_node = root.FindNode("plugins");
+        if (!plugins_node.IsValid())
         {
             return false;
         }
 
-        if (pPluginsNode->first_attribute("path") == nullptr)
-        {
-            ARK_ASSERT(0, "There are no ConfigPath.Name", __FILE__, __FUNCTION__);
-            return false;
-        }
-
-        plugin_path_ = pPluginsNode->first_attribute("path")->value();
-
-        //load plugins which run in different thread
+        plugin_path_ = plugins_node.GetString("path");
         int logic_index = 1;
-        for (rapidxml::xml_node<>* pThread = pPluginsNode->first_node("thread"); pThread != nullptr; pThread = pThread->next_sibling("thread"))
+
+        for (AFXmlNode thread_node = plugins_node.FindNode("thread"); thread_node.IsValid(); thread_node.NextNode())
         {
             std::map<int, std::vector<std::string>>::iterator iter = thread_plugins_.find(logic_index);
             if (iter == thread_plugins_.end())
@@ -179,10 +170,13 @@ namespace ark
                 thread_plugins_.insert(std::make_pair(logic_index, vec));
             }
 
-            for (rapidxml::xml_node<>* pPluginNode = pThread->first_node("plugin"); pPluginNode != nullptr; pPluginNode = pPluginNode->next_sibling("plugin"))
+            for (AFXmlNode plugin_node = thread_node.FindNode("plugin"); plugin_node.IsValid(); plugin_node.NextNode())
             {
-                const char* plugin_name = pPluginNode->first_attribute("name")->value();
-                iter->second.emplace_back(plugin_name);
+                std::string plugin_name = plugin_node.GetString("name");
+                std::string plugin_version = plugin_node.GetString("version");
+
+                std::string plugin_full_name = std::string(plugin_name) + "@" + plugin_version;
+                iter->second.emplace_back(plugin_full_name);
 
                 //TODO:need order
             }

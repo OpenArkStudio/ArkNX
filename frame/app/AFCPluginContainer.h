@@ -37,33 +37,26 @@ namespace ark
     {
     public:
         AFCPluginContainer(AFIApplication* app, int logic_id);
-        ~AFCPluginContainer() override;
 
         virtual bool Init();
         virtual bool Update();
         virtual bool Error();
         virtual bool Exit();
 
-        void Register(AFIPlugin* pPlugin) override;
-        void Deregister(AFIPlugin* pPlugin) override;
+        virtual void Register(AFIPlugin* pPlugin);
+        virtual void Deregister(AFIPlugin* pPlugin);
 
-        AFIPlugin* FindPlugin(const std::string& module_name) override;
+        virtual AFIPlugin* FindPlugin(const std::string& module_name);
 
-        void AddModule(const std::string& module_name, AFIModule* pModule) override;
-        void RemoveModule(const std::string& module_name) override;
-        AFIModule* FindModule(const std::string& module_name) override;
+        virtual void AddModule(const std::string& module_name, AFIModule* pModule);
+        virtual void RemoveModule(const std::string& module_name);
+        virtual AFIModule* FindModule(const std::string& module_name);
 
     protected:
-        //bool Init();
-        //bool PostInit();
-        //bool CheckConfig();
-        //bool PreUpdate();
-        //bool Update();
-        //bool PreShut();
-        //bool Shut();
-
-        bool LoadPluginLibrary(const std::string& plugin_name);
+        bool LoadPluginLibrary(const std::string& plugin_name, const std::string& plugin_version);
         bool UnloadPluginLibrary(const std::string& plugin_name);
+
+        const std::string& FindPluginVersion(const std::string& plugin_name);
 
     private:
         typedef void(*DLL_ENTRANCE_PLUGIN_FUNC)(AFIPluginContainer*);
@@ -71,13 +64,14 @@ namespace ark
 
         std::vector<std::string> plugin_names_;
         AFMap<std::string, AFCDynLib> plugin_libs_;
+        std::map<std::string, std::string> plugin_vers_;
         AFMap<std::string, AFIPlugin> plugin_instances_;
         AFMap<std::string, AFIModule> module_instances_;
 
     private:
-        AFIApplication* app_{ nullptr };
-        int logic_id_{ 0 };
-        std::string plugin_path_{};
+        AFIApplication* app_;
+        int logic_id_;
+        std::string plugin_path_;
     };
 
 }

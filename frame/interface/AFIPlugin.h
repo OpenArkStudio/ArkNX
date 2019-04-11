@@ -32,7 +32,7 @@ namespace ark
     class AFIPlugin : public AFIModule
     {
     public:
-        virtual int GetPluginVersion() = 0;
+        virtual std::string GetPluginVersion() = 0; //x.x.x
         virtual const std::string GetPluginName() = 0;
 
         virtual void Install() = 0;

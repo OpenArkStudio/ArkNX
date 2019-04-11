@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This source file is part of ARK
 * For the latest info, see https://github.com/QuadHex
 *
@@ -28,8 +28,8 @@ namespace ark
     class AFCDynLib
     {
     public:
-        explicit AFCDynLib(const std::string& strName) :
-            name_(strName)
+        explicit AFCDynLib(const std::string& name) :
+            name_(name)
         {
 #if ARK_RUN_MODE == ARK_RUN_MODE_DEBUG
             name_.append("_d");
@@ -57,7 +57,7 @@ namespace ark
             return name_;
         }
 
-        void* GetSymbol(const char* szProcName);
+        void* GetSymbol(const char* func_name);
 
     private:
         std::string name_;

@@ -38,24 +38,23 @@ namespace ark
         plugin_path_ = app->GetPluginPath();
     }
 
-    AFCPluginContainer::~AFCPluginContainer()
-    {
-
-    }
-
     bool AFCPluginContainer::Init()
     {
         //load all dll/so in this thread
         for (const auto& iter : plugin_names_)
         {
-            bool ret = LoadPluginLibrary(iter);
+            const std::string& plugin_name_with_version = iter; //name@version
+            size_t pos = plugin_name_with_version.find("@");
+            std::string plugin_name = plugin_name_with_version.substr(0, pos);
+            std::string plugin_version = plugin_name_with_version.substr(pos + 1, plugin_name_with_version.length() - pos - 1);
+            bool ret = LoadPluginLibrary(plugin_name, plugin_version);
             ARK_ASSERT_RET_VAL(ret == true, false);
         }
 
         for (const auto& iter : module_instances_)
         {
             AFIModule* pModule = iter.second;
-            if (pModule)
+            if (pModule != nullptr)
             {
                 pModule->Init();
             }
@@ -143,33 +142,32 @@ namespace ark
 
         module_instances_.clear();
         plugin_libs_.clear();
+        plugin_vers_.clear();
         plugin_instances_.clear();
         plugin_names_.clear();
         return true;
     }
 
-    bool AFCPluginContainer::LoadPluginLibrary(const std::string& plugin_name)
+    bool AFCPluginContainer::LoadPluginLibrary(const std::string& plugin_name, const std::string& plugin_version)
     {
         AFCDynLib* pDynLib = plugin_libs_.find_value(plugin_name);
-        if (pDynLib != nullptr)
-        {
-            return false;
-        }
+        ARK_ASSERT_RET_VAL(pDynLib != nullptr, false);
 
         AFCDynLib* pLib = ARK_NEW AFCDynLib(plugin_name);
         bool bLoad = pLib->Load(plugin_path_);
         if (bLoad)
         {
             plugin_libs_.insert(plugin_name, pLib);
-            DLL_ENTRANCE_PLUGIN_FUNC pFunc = (DLL_ENTRANCE_PLUGIN_FUNC)pLib->GetSymbol("DllEntryPlugin");
-            if (pFunc == nullptr)
+            plugin_vers_.insert(std::make_pair(plugin_name, plugin_version));
+            DLL_ENTRANCE_PLUGIN_FUNC entrance_func = (DLL_ENTRANCE_PLUGIN_FUNC)pLib->GetSymbol("DllEntryPlugin");
+            if (entrance_func == nullptr)
             {
                 CONSOLE_LOG << "Find function DllEntryPlugin Failed in [" << pLib->GetName() << "]" << std::endl;
-                assert(0);
+                ARK_ASSERT_NO_EFFECT(0);
                 return false;
             }
 
-            pFunc(this);
+            entrance_func(this);
 
             return true;
         }
@@ -204,10 +202,10 @@ namespace ark
             return false;
         }
 
-        DLL_EXIT_PLUGIN_FUNC pFunc = (DLL_EXIT_PLUGIN_FUNC)pDynLib->GetSymbol("DllExitPlugin");
-        if (pFunc != nullptr)
+        DLL_EXIT_PLUGIN_FUNC exit_func = (DLL_EXIT_PLUGIN_FUNC)pDynLib->GetSymbol("DllExitPlugin");
+        if (exit_func != nullptr)
         {
-            pFunc(this);
+            exit_func(this);
         }
 
         pDynLib->UnLoad();
@@ -221,8 +219,13 @@ namespace ark
     {
         std::string plugin_name = plugin->GetPluginName();
 
-        if (!FindPlugin(plugin_name))
+        // get plugin version
+        AFIPlugin* found_plugin = FindPlugin(plugin_name);
+        const std::string& plugin_version = FindPluginVersion(plugin_name);
+        if (found_plugin != nullptr)
         {
+            ARK_ASSERT_NO_EFFECT(plugin->GetPluginVersion() == plugin_version);
+
             plugin->SetPluginContainer(this);
             plugin_instances_.insert(plugin_name, plugin);
             plugin->Install();
@@ -251,6 +254,20 @@ namespace ark
     AFIPlugin* AFCPluginContainer::FindPlugin(const std::string& plugin_name)
     {
         return plugin_instances_.find(plugin_name)->second;
+    }
+
+    const std::string& AFCPluginContainer::FindPluginVersion(const std::string& plugin_name)
+    {
+        std::map<std::string, std::string>::iterator iter = plugin_vers_.find(plugin_name);
+        if (iter != plugin_vers_.end())
+        {
+            return iter->second;
+        }
+        else
+        {
+            static std::string null_string = "";
+            return null_string;
+        }
     }
 
     void AFCPluginContainer::AddModule(const std::string& module_name, AFIModule* module_ptr)

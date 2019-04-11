@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This source file is part of ARK
 * For the latest info, see https://github.com/QuadHex
 *
@@ -25,8 +25,8 @@ namespace ark
 
     bool AFCDynLib::Load(std::string const& path)
     {
-        std::string strLibPath = path + name_;
-        lib_inst_ = (DYNLIB_HANDLE)DYNLIB_LOAD(strLibPath.c_str());
+        std::string lib_path = path + name_;
+        lib_inst_ = (DYNLIB_HANDLE)DYNLIB_LOAD(lib_path.c_str());
 
         return lib_inst_ != nullptr;
     }
@@ -37,9 +37,9 @@ namespace ark
         return true;
     }
 
-    void* AFCDynLib::GetSymbol(const char* szProcName)
+    void* AFCDynLib::GetSymbol(const char* func_name)
     {
-        return (DYNLIB_HANDLE)DYNLIB_GETSYM(lib_inst_, szProcName);
+        return (DYNLIB_HANDLE)DYNLIB_GETSYM(lib_inst_, func_name);
     }
 
 }
