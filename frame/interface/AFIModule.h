@@ -24,6 +24,7 @@
 namespace ark
 {
     class AFIPluginContainer;
+    class AFIApplication;
 
     class AFIModule
     {
@@ -66,7 +67,7 @@ namespace ark
             return true;
         }
 
-        virtual AFIPluginContainer* GetPluginContainer() const final
+        AFIPluginContainer* GetPluginContainer()
         {
             return plugin_container_ptr_;
         }
@@ -76,10 +77,30 @@ namespace ark
             plugin_container_ptr_ = p;
         }
 
-        std::string strName;
+        void SetApplication(AFIApplication* value)
+        {
+            app_ = value;
+        }
 
-    protected:
+        AFIApplication* GetApplication()
+        {
+            return app_;
+        }
+
+        void SetName(const std::string& value)
+        {
+            name_ = value;
+        }
+
+        const std::string& GetName()
+        {
+            return name_;
+        }
+
+    private:
+        std::string name_;
         AFIPluginContainer* plugin_container_ptr_{ nullptr };
+        AFIApplication* app_{ nullptr };
     };
 
 }

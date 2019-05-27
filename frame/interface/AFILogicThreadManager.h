@@ -27,6 +27,7 @@
 
 namespace ark
 {
+
     //plug manager use interface
     class AFILogicThreadManager
     {

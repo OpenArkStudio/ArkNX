@@ -63,6 +63,7 @@
       <BrowseInformation>false</BrowseInformation>
       <LanguageStandard>
       </LanguageStandard>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

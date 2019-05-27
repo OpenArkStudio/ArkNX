@@ -87,6 +87,8 @@ ARK_EXPORT void DllExitPlugin(AFIPluginContainer* p)    \
         virtual void AddModule(const std::string& module_name, AFIModule* pModule) = 0;
         virtual void RemoveModule(const std::string& module_name) = 0;
         virtual AFIModule* FindModule(const std::string& module_name) = 0;
+
+        virtual AFIApplication* GetApplication() = 0;
     };
 
 }

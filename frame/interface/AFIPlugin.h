@@ -45,11 +45,12 @@ namespace ark
             assert((std::is_base_of<classBaseName, className>::value));
             AFIModule* pRegModuleName = ARK_NEW className();
             pRegModuleName->SetPluginContainer(plugin_container_ptr_);
-            pRegModuleName->strName = typeid(classBaseName).name();
-            plugin_container_ptr_->AddModule(pRegModuleName->strName, pRegModuleName);
-            modules_.insert(pRegModuleName->strName, pRegModuleName);
+            pRegModuleName->SetName(typeid(classBaseName).name());
+            plugin_container_ptr_->AddModule(pRegModuleName->GetName(), pRegModuleName);
+            modules_.insert(pRegModuleName->GetName(), pRegModuleName);
 #if ARK_PLATFORM == PLATFORM_WIN
-            if ((&className::Update != &AFIModule::Update))
+            //if ((&className::Update != &AFIModule::Update))
+            if (typeid(className::Update).name() != typeid(AFIModule::Update).name())
 #else
             AFIModule base;
             bool (AFIModule::*mfp)() = &AFIModule::Update;
@@ -59,7 +60,7 @@ namespace ark
             if (base_update_mfp == derived_update_mfp)
 #endif
             {
-                module_updates_.insert(pRegModuleName->strName, pRegModuleName);
+                module_updates_.insert(pRegModuleName->GetName(), pRegModuleName);
             }
         }
 

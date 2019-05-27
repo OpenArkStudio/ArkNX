@@ -27,18 +27,19 @@ namespace ark
 {
 
     class AFIModule;
+    class AFILogicThreadManager;
 
     class AFIApplication
     {
     public:
-        AFIApplication() = default;
-        virtual ~AFIApplication() = default;
+        AFIApplication() {}
+        virtual ~AFIApplication() {}
 
         template <typename T>
         T* FindModule()
         {
             AFIModule* logic_module = FindModule(typeid(T).name());
-            ARK_ASSERT_RET_VAL(logic_module != nullptr, nullptr);
+            ARK_ASSERT_RET_VAL(logic_module != NULL, NULL);
 
             if (!std::is_base_of<AFIModule, T>::value)
             {
@@ -46,7 +47,7 @@ namespace ark
             }
 
             T* derived_module = dynamic_cast<T*>(logic_module);
-            ARK_ASSERT_RET_VAL(derived_module != nullptr, nullptr);
+            ARK_ASSERT_RET_VAL(derived_module != NULL, NULL);
 
             return derived_module;
         }
@@ -68,6 +69,8 @@ namespace ark
         virtual const std::string& GetPluginPath() = 0;
 
         virtual bool GetPlugins(const int logic_id, std::vector<std::string>& plugins) = 0;
+
+        virtual AFILogicThreadManager* GetLogicThreadManager() = 0;
     };
 
 }

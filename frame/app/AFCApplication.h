@@ -35,8 +35,8 @@ namespace ark
     class AFCApplication : public AFIApplication
     {
     public:
-        AFCApplication();
-        ~AFCApplication() override;
+        explicit AFCApplication();
+        virtual ~AFCApplication();
 
         virtual bool Start();
         virtual bool Stoped();
@@ -55,6 +55,11 @@ namespace ark
         virtual const std::string& GetPluginPath();
 
         virtual bool GetPlugins(const int logic_id, std::vector<std::string>& plugins);
+
+        virtual AFILogicThreadManager* GetLogicThreadManager()
+        {
+            return logic_thread_manager_;
+        }
 
     protected:
         bool LoadPluginConf();

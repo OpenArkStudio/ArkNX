@@ -52,6 +52,8 @@ namespace ark
         virtual void RemoveModule(const std::string& module_name);
         virtual AFIModule* FindModule(const std::string& module_name);
 
+        virtual AFIApplication* GetApplication();
+
     protected:
         bool LoadPluginLibrary(const std::string& plugin_name, const std::string& plugin_version);
         bool UnloadPluginLibrary(const std::string& plugin_name);

@@ -117,10 +117,8 @@ namespace ark
             {
                 ARK_ASSERT_RET_VAL(optional == false, default_value);
             }
-            else
-            {
-                return attr->value();
-            }
+
+            return attr->value();
         }
 
     private:

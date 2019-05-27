@@ -227,6 +227,7 @@ namespace ark
             ARK_ASSERT_NO_EFFECT(plugin->GetPluginVersion() == plugin_version);
 
             plugin->SetPluginContainer(this);
+            plugin->SetApplication(app_);
             plugin_instances_.insert(plugin_name, plugin);
             plugin->Install();
         }
@@ -299,6 +300,11 @@ namespace ark
         {
             return nullptr;
         }
+    }
+
+    AFIApplication* AFCPluginContainer::GetApplication()
+    {
+        return app_;
     }
 
 }
