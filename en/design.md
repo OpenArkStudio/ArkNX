@@ -1,3 +1,0 @@
-# Design processing
-
-//Add later

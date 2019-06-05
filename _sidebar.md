@@ -7,5 +7,5 @@
   - [整体设计思路](design.md)
 
 - [FAQ](faq.md)
-- [版本发布](changelog.md)
+- [版本发布](release.md)
 - [计划](plan.md)

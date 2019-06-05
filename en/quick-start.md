@@ -1,3 +1,0 @@
-# Quick starting
-
-//Add later
