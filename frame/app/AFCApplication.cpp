@@ -57,6 +57,7 @@ namespace ark
         }
 
         ARK_DELETE(logic_thread_manager_);
+        ARK_DELETE(thread_event_manager_);
     }
 
     bool AFCApplication::Start()
