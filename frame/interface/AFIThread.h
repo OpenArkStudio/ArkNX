@@ -39,18 +39,11 @@
 #include <errno.h>
 #endif
 
+#include "AFIPluginContainer.h"
+
 namespace ark
 {
     class AFILogicThreadManager;
-
-    //Thread return
-    enum ThreadReturn
-    {
-        ARK_THREAD_RETURN_ONCE = 0,
-        ARK_THREAD_RETURN_CONTINUE,
-        ARK_THREAD_RETURN_ERROR,
-        ARK_THREAD_RETURN_PAUSE,
-    };
 
     //Thread state
     enum ThreadState
@@ -84,39 +77,24 @@ namespace ark
         ARK_THREAD_EVENT_GET_ALL,
     };
 
-    class AFILogicThreadReturn
-    {
-    public:
-        AFILogicThreadReturn() : thread_return_(ARK_THREAD_RETURN_PAUSE), pause_time_(0)
-        {
-
-        }
-
-        ThreadReturn thread_return_;
-        int          pause_time_;
-    };
+#define PARAM_THREAD_ID "threadid"
+#define PARAM_THREAD_TYPE "threadtype"
 
     //manager point
     class AFIManager
     {
     public:
-        AFIManager() : plugin_namager_(NULL), thread_event_manager_(NULL), logic_thread_manager_(NULL)
+        AFIManager() : thread_event_manager_(NULL), logic_thread_manager_(NULL)
         {
         };
 
         ~AFIManager() {};
 
-        void Init(AFIPluginContainer* plugin_namager, AFIThreadEventsManager* thread_event_manager, AFILogicThreadManager* logic_thread_manager)
+        void Init(AFIThreadEventsManager* thread_event_manager, AFILogicThreadManager* logic_thread_manager)
         {
-            plugin_namager_       = plugin_namager;
             thread_event_manager_ = thread_event_manager;
             logic_thread_manager_ = logic_thread_manager;
         };
-
-        AFIPluginContainer* GetPlugInManager()
-        {
-            return plugin_namager_;
-        }
 
         AFIThreadEventsManager* GetThreadEventManager()
         {
@@ -129,7 +107,6 @@ namespace ark
         }
 
     private:
-        AFIPluginContainer*      plugin_namager_;
         AFIThreadEventsManager* thread_event_manager_;
         AFILogicThreadManager* logic_thread_manager_;
     };
@@ -173,15 +150,6 @@ namespace ark
     typedef pthread_cond_t ThreadCond;
 #define HANDEL_ERROR_VALUE -1
 #endif
-
-    typedef void(*ThreadInit)(int, AFIPluginContainer*);
-
-    typedef AFILogicThreadReturn(*ThreadCallbackLogic)(int, vector<AFIThreadEvent*>& thread_events_list, AFIManager*, void*);
-
-    typedef ThreadError(*ThreadErrorLogic)(int, ThreadLogicErrorType, int&, void*);
-
-    typedef void(*ThreadExit)(int, AFIPluginContainer*);
-
 }
 
 #endif //_AFITHREAD_H

@@ -43,23 +43,9 @@ namespace ark
 
         void Close();
 
-        void Init(int64_t main_check_time_interval, AFIPluginContainer* plugin_manager, AFIThreadEventsManager* event_manager);
+        virtual void Init(int64_t main_check_time_interval, AFIThreadEventsManager* event_manager);
 
-        virtual bool CreateThread(int thread_logic_id,
-                                  ThreadEventGetType thread_event_get_type,
-                                  ThreadInit thread_init,
-                                  ThreadCallbackLogic thread_callback_logic,
-                                  ThreadErrorLogic thread_callback_error,
-                                  ThreadExit thread_exit,
-                                  void* arg);
-
-        virtual bool CreateThread(int thread_logic_id,
-                                  ThreadEventGetType thread_event_get_type,
-                                  StateMechineFunction init,
-                                  StateMechineFunction run,
-                                  StateMechineFunction error,
-                                  StateMechineFunction exit,
-                                  void* args);
+        virtual bool CreateThread(AFIPluginContainer* plugin_container);
 
         virtual bool KillThread(int thread_logic_id);
 
@@ -81,10 +67,9 @@ namespace ark
         void UnLock();
 
     private:
-        mapThreadList          thread_list_;
-        ThreadMutex*           main_thread_mutex_;
-        int64_t                main_check_time_interval_;
-        AFIPluginContainer*      plugin_manager_;
+        mapThreadList           thread_list_;
+        ThreadMutex*            main_thread_mutex_;
+        int64_t                 main_check_time_interval_;
         AFIThreadEventsManager* event_manager_;
     };
 }

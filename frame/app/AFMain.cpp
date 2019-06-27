@@ -215,24 +215,6 @@ bool ParseArgs(int argc, char* argv[])
     return true;
 }
 
-//void MainLoop()
-//{
-//#if ARK_PLATFORM == PLATFORM_WIN
-//
-//    __try
-//    {
-//        AFCPluginManager::get()->Update();
-//    }
-//    __except (ApplicationCrashHandler(GetExceptionInformation()))
-//    {
-//        //Do nothing for now.
-//    }
-//
-//#else
-//    AFCPluginManager::get()->Update();
-//#endif
-//}
-
 int main(int argc, char* argv[])
 {
     if (!ParseArgs(argc, argv))

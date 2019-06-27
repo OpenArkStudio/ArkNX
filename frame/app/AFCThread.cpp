@@ -16,8 +16,7 @@ namespace ark
         AFCThreadParam* thread_param = (AFCThreadParam*)arg;
 
         //Init thread func
-        thread_param->thread_init_(thread_param->thread_->GetThreadLogicID(),
-                                   thread_param->thread_->GetManager()->GetPlugInManager());
+        thread_param->plugin_container_->Update();
 
         while (ARK_THREAD_STATE_LOGIC_CLOSE != thread_param->thread_->GetThreadState())
         {
@@ -28,7 +27,6 @@ namespace ark
 
             thread_param->thread_->Lock();
 
-            int error_id = 0;
             thread_param->thread_->SaveLastRunTimeBegin();
 
             thread_events_list.clear();
@@ -50,10 +48,7 @@ namespace ark
             }
 
 
-            AFILogicThreadReturn thread_return = thread_param->thread_callback_logic_(thread_param->thread_->GetThreadLogicID(),
-                                                 thread_events_list,
-                                                 thread_param->thread_->GetManager(),
-                                                 thread_param->arg_);
+            AFILogicThreadReturn thread_return = thread_param->plugin_container_->Update();
 
             thread_param->thread_->SaveLastRunTimeEnd();
 
@@ -75,12 +70,9 @@ namespace ark
             {
                 //call thread logic error function
                 thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_ERROR);
-                ThreadError thread_error = thread_param->thread_error_logic_(thread_param->thread_->GetThreadLogicID(),
-                                           ARK_THREAD_LOGIC_ERROR,
-                                           error_id,
-                                           thread_param->arg_);
+                bool Thread_error_exit = thread_param->plugin_container_->Error(ARK_THREAD_LOGIC_ERROR);
 
-                if (ARK_THREAD_ERROR_CLOSE == thread_error)
+                if (true == Thread_error_exit)
                 {
                     break;
                 }
@@ -103,9 +95,7 @@ namespace ark
         }
 
         thread_param->thread_->UnLock();
-        thread_param->thread_exit_(thread_param->thread_->GetThreadLogicID(),
-                                   thread_param->thread_->GetManager()->GetPlugInManager());
-
+        thread_param->plugin_container_->Exit();
 
         thread_param->thread_->SetThreadState(ARK_THREAD_STATE_LOGIC_FINISH);
         return 0;
@@ -147,14 +137,7 @@ namespace ark
         }
     }
 
-    bool AFCThread::CreateThread(int thread_logic_id,
-                                 ThreadEventGetType thread_event_get_type,
-                                 ThreadInit thread_init,
-                                 ThreadCallbackLogic thread_callback_logic,
-                                 ThreadErrorLogic thread_callback_error,
-                                 ThreadExit thread_exit,
-                                 void* arg,
-                                 AFIPluginContainer* plugin_manager,
+    bool AFCThread::CreateThread(AFIPluginContainer* plugin_container,
                                  AFIThreadEventsManager* event_manager,
                                  AFILogicThreadManager* logic_manager)
     {
@@ -163,19 +146,14 @@ namespace ark
             return false;
         }
 
-        thread_param_.thread_ = (AFIThread*)this;
-        thread_param_.arg_ = arg;
-        thread_param_.thread_callback_logic_ = thread_callback_logic;
-        thread_param_.thread_error_logic_ = thread_callback_error;
-        thread_param_.thread_exit_ = thread_exit;
-        thread_param_.thread_init_ = thread_init;
+        thread_param_.thread_           = (AFIThread*)this;
+        thread_param_.plugin_container_ = plugin_container;
 
-        thread_state_          = ARK_THREAD_STATE_INIT;
-        thread_logic_id_       = thread_logic_id;
-        thread_error_logic_    = thread_callback_error;
-        thread_event_get_type_ = thread_event_get_type;
+        thread_state_                   = ARK_THREAD_STATE_INIT;
+        thread_logic_id_                = atoi(plugin_container->GetParam(PARAM_THREAD_ID).c_str());
+        thread_event_get_type_          = (ThreadEventGetType)atoi(plugin_container->GetParam(PARAM_THREAD_TYPE).c_str());
 
-        manager_.Init(plugin_manager, event_manager, logic_manager);
+        manager_.Init(event_manager, logic_manager);
 
 #if ARK_PLATFORM == PLATFORM_WIN
         unsigned int thread_id = 0;
@@ -318,11 +296,7 @@ namespace ark
 
     void AFCThread::ThreadTimeoutCallBack()
     {
-        int error_id = 0;
-        thread_error_logic_(thread_logic_id_,
-                            ARK_THREAD_LOGIC_TIMEOUT,
-                            error_id,
-                            NULL);
+        thread_param_.plugin_container_->Error(ARK_THREAD_LOGIC_TIMEOUT);
     }
 
     ThreadState AFCThread::GetThreadState()

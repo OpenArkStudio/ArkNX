@@ -16,12 +16,6 @@
     <ClInclude Include="AFCThreadEventsManager.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\test\TestEventsManager.h">
-      <Filter>test</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\test\TestLogicThreadManager.h">
-      <Filter>test</Filter>
-    </ClInclude>
     <ClInclude Include="AFCPluginContainer.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -46,12 +40,6 @@
     <ClCompile Include="AFCThreadEventsManager.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\TestEventsManager.cpp">
-      <Filter>test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\test\TestLogicThreadManager.cpp">
-      <Filter>test</Filter>
-    </ClCompile>
     <ClCompile Include="AFCPluginContainer.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -60,9 +48,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="test">
-      <UniqueIdentifier>{ab05bd17-8368-4e81-bdd1-1a0c9d66ef8b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="core">
       <UniqueIdentifier>{67094392-83b7-41ca-87fc-f4bf388b8dbb}</UniqueIdentifier>
     </Filter>

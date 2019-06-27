@@ -28,6 +28,7 @@
 #include "AFCApplication.h"
 #include "AFCPluginContainer.h"
 #include "AFCLogicThreadManager.h"
+#include "AFCThreadEventsManager.h"
 
 namespace ark
 {
@@ -36,6 +37,9 @@ namespace ark
     {
         cur_time_ = AFDateTime::GetNowTime();
         logic_thread_manager_ = ARK_NEW AFCLogicThreadManager();
+        thread_event_manager_ = ARK_NEW AFCThreadEventsManager();
+
+        logic_thread_manager_->Init(1000, thread_event_manager_);
 
         if (!LoadPluginConf())
         {
@@ -65,14 +69,7 @@ namespace ark
             //create a PluginContainer
             AFIPluginContainer* plugin_container = ARK_NEW AFCPluginContainer(this, thread_logic_id);
             //Start plugin container thread
-            logic_thread_manager_->CreateThread(thread_logic_id,
-                                                ARK_THREAD_EVENT_GET_SINGLE,
-                                                plugin_container,
-                                                &AFIPluginContainer::Init,
-                                                &AFIPluginContainer::Update,
-                                                &AFIPluginContainer::Error,
-                                                &AFIPluginContainer::Exit,
-                                                nullptr);
+            logic_thread_manager_->CreateThread(plugin_container);
 
             //manage
             plugin_containers_.insert(thread_logic_id, plugin_container);
@@ -133,6 +130,7 @@ namespace ark
     bool AFCApplication::GetPlugins(const int logic_id, std::vector<std::string>& plugins)
     {
         auto iter = thread_plugins_.find(logic_id);
+
         if (iter == thread_plugins_.end())
         {
             return false;
@@ -153,6 +151,7 @@ namespace ark
         AFXmlNode root = xml_doc.GetRootNode();
 
         AFXmlNode plugins_node = root.FindNode("plugins");
+
         if (!plugins_node.IsValid())
         {
             return false;
@@ -164,6 +163,7 @@ namespace ark
         for (AFXmlNode thread_node = plugins_node.FindNode("thread"); thread_node.IsValid(); thread_node.NextNode())
         {
             std::map<int, std::vector<std::string>>::iterator iter = thread_plugins_.find(logic_index);
+
             if (iter == thread_plugins_.end())
             {
                 std::vector<std::string> vec;

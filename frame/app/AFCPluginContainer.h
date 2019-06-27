@@ -39,12 +39,14 @@ namespace ark
         AFCPluginContainer(AFIApplication* app, int logic_id);
 
         virtual bool Init();
-        virtual bool Update();
-        virtual bool Error();
+        virtual AFILogicThreadReturn  Update();
+        virtual bool Error(int err_id);
         virtual bool Exit();
 
         virtual void Register(AFIPlugin* pPlugin);
         virtual void Deregister(AFIPlugin* pPlugin);
+
+        virtual std::string GetParam(const char* pName);
 
         virtual AFIPlugin* FindPlugin(const std::string& module_name);
 

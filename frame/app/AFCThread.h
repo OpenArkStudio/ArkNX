@@ -32,15 +32,11 @@ namespace ark
     class AFCThreadParam
     {
     public:
-        AFCThreadParam() : thread_(NULL), arg_(NULL) {};
+        AFCThreadParam() : thread_(NULL) {};
 
     public:
-        AFIThread* thread_;
-        void*      arg_;
-        ThreadCallbackLogic thread_callback_logic_;
-        ThreadErrorLogic    thread_error_logic_;
-        ThreadExit          thread_exit_;
-        ThreadInit          thread_init_;
+        AFIThread*          thread_;
+        AFIPluginContainer* plugin_container_;
     };
 
     class AFCThread : public AFIThread
@@ -49,14 +45,7 @@ namespace ark
         AFCThread();
         virtual ~AFCThread();
 
-        bool CreateThread(int thread_logic_id,
-                          ThreadEventGetType thread_event_get_type,
-                          ThreadInit thread_init,
-                          ThreadCallbackLogic thread_callback_logic,
-                          ThreadErrorLogic thread_callback_error,
-                          ThreadExit thread_exit,
-                          void* arg,
-                          AFIPluginContainer* plugin_manager,
+        bool CreateThread(AFIPluginContainer* plugin_container,
                           AFIThreadEventsManager* event_manager,
                           AFILogicThreadManager* logic_manager);
 
@@ -112,7 +101,6 @@ namespace ark
         ThreadState        thread_state_;
         AFIManager         manager_;
         ThreadEventGetType thread_event_get_type_;
-        ThreadErrorLogic   thread_error_logic_;
     };
 }
 

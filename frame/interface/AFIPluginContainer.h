@@ -25,18 +25,38 @@
 
 namespace ark
 {
+    //Thread return
+    enum ThreadReturn
+    {
+        ARK_THREAD_RETURN_CONTINUE = 0,
+        ARK_THREAD_RETURN_ONCE,
+        ARK_THREAD_RETURN_ERROR,
+        ARK_THREAD_RETURN_PAUSE,
+    };
+
+    class AFILogicThreadReturn
+    {
+    public:
+        AFILogicThreadReturn() : thread_return_(ARK_THREAD_RETURN_CONTINUE), pause_time_(0)
+        {
+
+        }
+
+        ThreadReturn thread_return_;
+        int          pause_time_;
+    };
 
 #define ARK_DLL_PLUGIN_ENTRY(plugin_name)               \
-ARK_EXPORT void DllEntryPlugin(AFIPluginContainer* p)   \
-{                                                       \
-    p->Register<plugin_name>();                         \
-}
+    ARK_EXPORT void DllEntryPlugin(AFIPluginContainer* p)   \
+    {                                                       \
+        p->Register<plugin_name>();                         \
+    }
 
 #define ARK_DLL_PLUGIN_EXIT(plugin_name)                \
-ARK_EXPORT void DllExitPlugin(AFIPluginContainer* p)    \
-{                                                       \
-    p->Deregister<plugin_name>();                       \
-}
+    ARK_EXPORT void DllExitPlugin(AFIPluginContainer* p)    \
+    {                                                       \
+        p->Deregister<plugin_name>();                       \
+    }
 
     class AFIPlugin;
 
@@ -46,9 +66,11 @@ ARK_EXPORT void DllExitPlugin(AFIPluginContainer* p)    \
         virtual ~AFIPluginContainer() {}
 
         virtual bool Init() = 0;
-        virtual bool Update() = 0;
-        virtual bool Error() = 0;
+        virtual AFILogicThreadReturn Update() = 0;
+        virtual bool Error(int err_id) = 0;
         virtual bool Exit() = 0;
+
+        virtual std::string GetParam(const char* pName) = 0;
 
         template <typename T>
         T* FindModule()

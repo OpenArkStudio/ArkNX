@@ -20,7 +20,6 @@ namespace ark
 
     AFCLogicThreadManager::AFCLogicThreadManager() :
         main_check_time_interval_(0),
-        plugin_manager_(NULL),
         event_manager_(NULL)
     {
 #if ARK_PLATFORM == PLATFORM_WIN
@@ -70,10 +69,9 @@ namespace ark
         UnLock();
     }
 
-    void AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIPluginContainer* plugin_manager, AFIThreadEventsManager* event_manager)
+    void AFCLogicThreadManager::Init(int64_t main_check_time_interval, AFIThreadEventsManager* event_manager)
     {
         main_check_time_interval_ = main_check_time_interval;
-        plugin_manager_           = plugin_manager;
         event_manager_            = event_manager;
 
         //create maintain thread
@@ -85,15 +83,10 @@ namespace ark
 #endif
     }
 
-    bool AFCLogicThreadManager::CreateThread(int thread_logic_id,
-            ThreadEventGetType thread_event_get_type,
-            ThreadInit thread_init,
-            ThreadCallbackLogic thread_callback_logic,
-            ThreadErrorLogic thread_callback_error,
-            ThreadExit thread_exit,
-            void* arg)
+    bool AFCLogicThreadManager::CreateThread(AFIPluginContainer* plugin_container)
     {
         Lock();
+        int thread_logic_id = atoi(plugin_container->GetParam(PARAM_THREAD_ID).c_str());
         mapThreadList::iterator f = thread_list_.find(thread_logic_id);
 
         //find esist thread
@@ -111,16 +104,7 @@ namespace ark
             return false;
         }
 
-        bool blret = thread_info->CreateThread(thread_logic_id,
-                                               thread_event_get_type,
-                                               thread_init,
-                                               thread_callback_logic,
-                                               thread_callback_error,
-                                               thread_exit,
-                                               arg,
-                                               plugin_manager_,
-                                               event_manager_,
-                                               this);
+        bool blret = thread_info->CreateThread(plugin_container, event_manager_, this);
 
         if (true == blret)
         {
@@ -135,19 +119,6 @@ namespace ark
             return false;
         }
 
-    }
-
-
-    bool AFCLogicThreadManager::CreateThread(int thread_logic_id,
-            ThreadEventGetType thread_event_get_type,
-            StateMechineFunction init,
-            StateMechineFunction run,
-            StateMechineFunction error,
-            StateMechineFunction exit,
-            void* args)
-    {
-        //TODO:
-        return true;
     }
 
     bool AFCLogicThreadManager::KillThread(int thread_logic_id)

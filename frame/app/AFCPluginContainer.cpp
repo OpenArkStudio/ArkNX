@@ -54,61 +54,36 @@ namespace ark
         for (const auto& iter : module_instances_)
         {
             AFIModule* pModule = iter.second;
+
             if (pModule != nullptr)
             {
                 pModule->Init();
             }
         }
 
-        ////For now, DO NOT use
-        //for (const auto& iter : module_instances_)
-        //{
-        //    AFIModule* pModule = iter.second;
-        //    if (pModule)
-        //    {
-        //        pModule->PostInit();
-        //    }
-        //}
-
-        //for (const auto& iter : module_instances_)
-        //{
-        //    AFIModule* pModule = iter.second;
-        //    if (pModule)
-        //    {
-        //        pModule->CheckConfig();
-        //    }
-        //}
-
-        //for (const auto& iter : module_instances_)
-        //{
-        //    AFIModule* pModule = iter.second;
-        //    if (pModule)
-        //    {
-        //        pModule->PreUpdate();
-        //    }
-        //}
-
         return true;
     }
 
-    bool AFCPluginContainer::Update()
+    AFILogicThreadReturn AFCPluginContainer::Update()
     {
         //TODO:
+        AFILogicThreadReturn thread_return;
         int64_t cur_time_ = AFDateTime::GetNowTime();
 
         for (const auto& iter : module_instances_)
         {
             AFIModule* pModule = iter.second;
+
             if (pModule)
             {
                 pModule->Update();
             }
         }
 
-        return true;
+        return thread_return;
     }
 
-    bool AFCPluginContainer::Error()
+    bool AFCPluginContainer::Error(int err_id)
     {
         //Do something
         //e.g. log or some special things
@@ -120,6 +95,7 @@ namespace ark
         for (const auto& iter : module_instances_)
         {
             AFIModule* pModule = iter.second;
+
             if (pModule)
             {
                 pModule->PreShut();
@@ -129,6 +105,7 @@ namespace ark
         for (const auto& iter : module_instances_)
         {
             AFIModule* pModule = iter.second;
+
             if (pModule)
             {
                 pModule->Shut();
@@ -155,11 +132,13 @@ namespace ark
 
         AFCDynLib* pLib = ARK_NEW AFCDynLib(plugin_name);
         bool bLoad = pLib->Load(plugin_path_);
+
         if (bLoad)
         {
             plugin_libs_.insert(plugin_name, pLib);
             plugin_vers_.insert(std::make_pair(plugin_name, plugin_version));
             DLL_ENTRANCE_PLUGIN_FUNC entrance_func = (DLL_ENTRANCE_PLUGIN_FUNC)pLib->GetSymbol("DllEntryPlugin");
+
             if (entrance_func == nullptr)
             {
                 CONSOLE_LOG << "Find function DllEntryPlugin Failed in [" << pLib->GetName() << "]" << std::endl;
@@ -175,6 +154,7 @@ namespace ark
         {
 #if ARK_PLATFORM == PLATFORM_UNIX
             char* error = dlerror();
+
             if (error)
             {
                 CONSOLE_LOG << stderr << " Load shared library[" << pLib->GetName() << "] failed, ErrorNo. = [" << error << "]" << std::endl;
@@ -197,12 +177,14 @@ namespace ark
     bool AFCPluginContainer::UnloadPluginLibrary(const std::string& plugin_name)
     {
         AFCDynLib* pDynLib = plugin_libs_.find_value(plugin_name);
+
         if (pDynLib == nullptr)
         {
             return false;
         }
 
         DLL_EXIT_PLUGIN_FUNC exit_func = (DLL_EXIT_PLUGIN_FUNC)pDynLib->GetSymbol("DllExitPlugin");
+
         if (exit_func != nullptr)
         {
             exit_func(this);
@@ -222,6 +204,7 @@ namespace ark
         // get plugin version
         AFIPlugin* found_plugin = FindPlugin(plugin_name);
         const std::string& plugin_version = FindPluginVersion(plugin_name);
+
         if (found_plugin != nullptr)
         {
             ARK_ASSERT_NO_EFFECT(plugin->GetPluginVersion() == plugin_version);
@@ -242,6 +225,7 @@ namespace ark
         ARK_ASSERT_RET_NONE(plugin != nullptr);
 
         auto find_plugin = FindPlugin(plugin->GetPluginName());
+
         if (find_plugin == nullptr)
         {
             return;
@@ -252,6 +236,11 @@ namespace ark
         ARK_DELETE(plugin);
     }
 
+    std::string AFCPluginContainer::GetParam(const char* pName)
+    {
+        return "";
+    }
+
     AFIPlugin* AFCPluginContainer::FindPlugin(const std::string& plugin_name)
     {
         return plugin_instances_.find(plugin_name)->second;
@@ -260,6 +249,7 @@ namespace ark
     const std::string& AFCPluginContainer::FindPluginVersion(const std::string& plugin_name)
     {
         std::map<std::string, std::string>::iterator iter = plugin_vers_.find(plugin_name);
+
         if (iter != plugin_vers_.end())
         {
             return iter->second;
@@ -280,6 +270,7 @@ namespace ark
     void AFCPluginContainer::RemoveModule(const std::string& module_name)
     {
         auto iter = module_instances_.find(module_name);
+
         if (iter == module_instances_.end())
         {
             return;
@@ -292,6 +283,7 @@ namespace ark
     AFIModule* AFCPluginContainer::FindModule(const std::string& module_name)
     {
         auto iter = module_instances_.find(module_name);
+
         if (iter != module_instances_.end())
         {
             return iter->second;
